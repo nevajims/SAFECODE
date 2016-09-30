@@ -1,5 +1,7 @@
+% made small changes for first commit
 clear; close all;
 do_plot = 1;
+
 %-------------------------------
 % demo of how to use SAFE method to calculate dispersion curves for a 2D
 % waveguide - a 1mm diameter aluminium rod as an example
@@ -58,7 +60,7 @@ load('4-01-0A IM RAIL MODEL 56 E 1 (H 158_75 W 139_70).mat')
 %load('5-01-0A IM RAIL MODEL 60 E 1 (H 172 W 150).mat')
 
 %[equispaced_points_mm, nom_el_size_mm]    =  get_outside_edge( data , 172 , 150 , 100 , 1);
-[equispaced_points_mm, nom_el_size_mm]     =  get_outside_edge( data , 158.75 , 139.7 , 150 , 1); 
+[equispaced_points_mm, nom_el_size_mm]     =  get_outside_edge( data , 158.75 , 139.7 , 50 , 1); 
 
 nom_el_size = 0.5*nom_el_size_mm * 1E-3;
 nd_ = [real(equispaced_points_mm )'*1E-3,imag(equispaced_points_mm )'*1E-3];
@@ -93,7 +95,7 @@ switch indep_var
 end;
 %save unsorted_results unsorted_results
 [data_wn] = create_fenel_format_data (unsorted_results);
-save data_wn data_wn
+%save data_wn data_wn
 
 
 [reshaped_proc_data,sorted_lookup,data_wn_matrix] =  proc_data_into_modes_safe(data_wn);
@@ -103,7 +105,7 @@ reshaped_proc_data.mesh = mesh ;
 
 %save reshaped_proc_data reshaped_proc_data
 
-save reshaped_proc_data reshaped_proc_data -v7.3
+%save reshaped_proc_data reshaped_proc_data -v7.3
 
 %[dispersion_region] = get_dispersion_region(reshaped_proc_data,0.5E5,10000) ;
 
