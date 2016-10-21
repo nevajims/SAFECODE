@@ -1,5 +1,4 @@
-function [reshaped_proc_data]  = safe_2d_fn(option_1 , option_2, option_2    )
-%
+function [reshaped_proc_data]  = safe_2d_fn(option_1 , option_2 , option_3 )
 
 % Options
 % --------
@@ -10,10 +9,10 @@ function [reshaped_proc_data]  = safe_2d_fn(option_1 , option_2, option_2    )
 % 1 is circular rod 
 % 2 is a rail
 % option_3 solver_par 
-% 
-% --------
-
-
+%
+% allow for batch processing of files
+% Have a file that produces the input data for a run-  presently make it
+% simply a script that needs to be run
 
 
 % at present just 
@@ -47,16 +46,13 @@ do_plot = 1;
 %-------------------------------
 % define material(s)
 %------------------------------
-%   
-%
-%  Put in a strain_per value and have the model solve for this value-  then
-%  from the results write a function that plots phase velocity vs frequency
-%  for a chosen mode 
-%  extract the first  
-
+% Put in a strain_per value and have the model solve for this value-  then
+% from the results write a function that plots phase velocity vs frequency
+% for a chosen mode 
+% extract the first  
 % set
-
-matl_name,youngs_modulus,poissons_ratio, density
+% matl_name,youngs_modulus,poissons_ratio, density
+%------------------------------
 
 
 switch(option_1) 
@@ -66,15 +62,14 @@ youngs_modulus        = 70e9        ;
 poissons_ratio        = 1/3         ;
 density = 2700;
     case(2)
-matl_name = 'steel';
+matl_name            = 'steel';
 youngs_modulus       = 216.9e9      ; 
 poissons_ratio       = 0.2865       ;
 density              = 7932         ;
+
     otherwise
         disp('error only 2 material types availible at this time')
 end %switch(option_1) 
-    
-
 
 
 % default disperse vaules--------------------------------------------
@@ -103,6 +98,7 @@ safe_opts.use_sparse = 1            ;
 %[nodes_,edge_] = create_n_sided_polygon(424.8 ,16.24 ,8 , no_per_side);
 %nodes_        = nodes_* 1e-3;
 %%%%%%%%%%%%%%%%%[nodes_,edge_] = create_n_sided_polygon(416.18 ,20.56 , 8 , 10);
+
 %[nodes_,edge_]  =  create_arb_pipe(438.5 , 9.525 , 150);
 % nom_el_size = 12E-3;
 
@@ -119,8 +115,6 @@ safe_opts.use_sparse = 1;
 %mesh - see mesh2d or meshfaces functions for how meshing works
 
 
-
-
 rad = 0.5e-3;
 nom_el_size = rad/8;
 triangular_element_type = 2;
@@ -128,7 +122,6 @@ a = linspace(0, 2 * pi, ceil(2 * pi * rad / nom_el_size));
 a = a(1:end - 1)';
 nd_ = [cos(a), sin(a)] * rad ;
 %--------------------------------------------------------------------------
-
 load('4-01-0A IM RAIL MODEL 56 E 1 (H 158_75 W 139_70).mat')
 %load('5-01-0A IM RAIL MODEL 60 E 1 (H 172 W 150).mat')
 %[equispaced_points_mm, nom_el_size_mm]    =  get_outside_edge( data , 172 , 150 , 100 , 1);
@@ -137,6 +130,7 @@ nom_el_size = 0.5*nom_el_size_mm * 1E-3;
 nd_ = [real(equispaced_points_mm )'*1E-3,imag(equispaced_points_mm )'*1E-3];
 
 %--------------------------------------------------------------------------
+
 mesh.matl{1}.name              =   matl_name;
 mesh.matl{1}.stiffness_matrix  =   fn_iso_stiffness_matrix(youngs_modulus, poissons_ratio);
 mesh.matl{1}.density           =   density;
@@ -155,6 +149,9 @@ mesh.nd.dof   = ones(size(mesh.nd.pos, 1), 3)                           ;
 
 %display mesh
 %SAFE solver
+
+
+
 switch indep_var
     case 'waveno'
         var = linspace(0, 2 * pi * max_freq / shear_vel, pts);
@@ -168,8 +165,8 @@ end;
 [data_wn] = create_fenel_format_data (unsorted_results);
 %save data_wn data_wn
 
-
 [reshaped_proc_data,sorted_lookup,data_wn_matrix] =  proc_data_into_modes_safe(data_wn);
+
 reshaped_proc_data.mesh = mesh ;
 %save sorted_lookup sorted_lookup
 %save data_wn_matrix data_wn_matrix

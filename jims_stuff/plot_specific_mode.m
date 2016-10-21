@@ -20,11 +20,15 @@ reshaped_proc_data.group_velocity = calc_group_vel(reshaped_proc_data.freq,resha
 % other objects will be children of this and can therfore access the data
 % structure held in 'UserData'  AKA   plot_data_structure
 default_limit_options = {[0  1.2E4],[0 25],[0 8000],[0 5000]};
+
+
 fig_handle = figure('units','normalized','outerposition',[0.05 0.05 0.9 0.9],'DeleteFcn',@DeleteFcn_callback ,'UserData',struct('undeformed_node_positions',-1,...
 'mult_factor',1,'max_mult_factor',2,'mesh_view1',[180 -90],'mesh_view2',[0 90],'mesh_view3',[90 0],'point_index',3,'show_displacement',0, ...
 'mode_index',5,'reshaped_proc_data',reshaped_proc_data,'lim_options',{default_limit_options},'def_lim_options',{default_limit_options} ,'label_options',...
 {{'Freq(Hz)','WaveNo.(1/m)','Phase Velocity(m/s)','Group Velocity(m/s)'}},'x_index',1,'y_index',3,'cartesian_or_cylindrical',1,'mode_shape_display_option',...
 1,'animate_button_value',0,'animation_timer_handle',-1,'current_animation_angle',0,'mult_factor_speed',30,'modes_to_plot',1:size(reshaped_proc_data.freq,2),'show_mesh',0));
+
+
 % menus-------------------------------------------------------------------------------------------------
 menu_handle             = uimenu(fig_handle, 'Label','DISPERSION OPTIONS')                               ;
 uimenu(menu_handle, 'Label','Open disp file','Callback',@Open_new_file)                                  ; % open a new dispersion file 
@@ -42,16 +46,19 @@ uicontrol('Style', 'pushbutton', 'String', 'Choose point','Position'            
 uicontrol('Style', 'pushbutton', 'String', 'Select Modes /no','Position'                           , [10 550 120 50]                       ,'Callback' , @but_func_2)                     ; % select modes on dispersion curve       
 uicontrol('Style', 'pushbutton', 'String', 'Select Modes /freq','Position'                         , [10 600 120 50]                       ,'Callback' , @but_func_3)                     ; % select modes on dispersion curve       
 uicontrol('Style', 'pushbutton', 'String', 'Show Legend','Position'                                , [10 650 120 50]                       ,'Callback' , @but_func_4)                     ; % select modes on dispersion curve       
-uicontrol('Style', 'pushbutton', 'String', 'Reset Limts','Position'                                , [10 720 80 30]                       ,'Callback' , @but_func_5)                     ; % select modes on dispersion curve       
+uicontrol('Style', 'pushbutton', 'String', 'Reset Limts','Position'                                , [10 720 80 30]                        ,'Callback' , @but_func_5)                     ; % select modes on dispersion curve       
 uicontrol('Style', 'checkbox', 'String', 'Displacement vectors on','Position'                      , [20 150 160 20]                       ,'Callback' , @check_func_1)                   ; % turn on/off displacement vectors      
 uicontrol('Style', 'popup','String', {'Freq(Hz)','WaveNo.(1/m)','Phase Velocity(m/s)','Group Velocity(m/s)'},   'Position', [10 410 120 50],'Callback' , @select_x_ordinate); % select the x odinate
+
 uicontrol('Style', 'popup','String', {'Phase Velocity(m/s)','Group Velocity(m/s)','Freq(Hz)','WaveNo.(1/m)'},   'Position', [10 370 120 50],'Callback' , @select_y_ordinate); % select the y odinate
+
 uicontrol('Style', 'popup','String', {'Cartesian','Cylindrical'},   'Position'                     , [20 180 100 40]                       ,'Callback' , @co_ord_display)                 ; % switch between cylindrical and cartesian coordinates 
 uicontrol('Style', 'popup','String', {'2d mesh','external nodes','3d rendered'},'Position'         , [20 230 100 40]                       ,'Callback' , @mesh_display)                   ; % switch between full mesh and external edge view 
 uicontrol('Style', 'popup','String', {'xy','iso','xz'},'Position'                                  , [850 420 100 40]                      ,'Callback' , @animation_view)                 ; % view for animation 
 uicontrol('Style', 'checkbox','String','Animate Mode','Position'                                   , [730 440 100 20]                      ,'Callback' , @Animate_button)                 ; % switch on and off the animation of a selected mode
 checkbox_handle_mesh =  uicontrol('Style', 'checkbox','String','Show redered Mesh','Position'      , [730 410 130 20]   ,  'Callback' , @show_mesh_ren,'visible','off' ) ; % switch on and off 3d mesh 
 clear reshaped_proc_data 
+
 
 fig_setup(fig_handle,slider_handle,slider_handle_2,checkbox_handle_mesh,slider_handle_xl,slider_handle_xh,slider_handle_yl,slider_handle_yh);                           
 %------------------------------------------------------------------------------------------------------
@@ -79,7 +86,6 @@ plot_data_structure.slider_handle_yh        = slider_handle_yh           ;
 
 plot_data_structure.dispersion_axis         = subplot(2,3,1:3)           ;
 plot_data_structure.mesh_axis1              = subplot(2,3,4)             ;
-
 set(plot_data_structure.mesh_axis1,'UserData',1)
 plot_data_structure.mesh_axis2         = subplot(2,3,5)             ;
 set(plot_data_structure.mesh_axis2,'UserData',2)
