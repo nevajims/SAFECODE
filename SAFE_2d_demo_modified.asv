@@ -110,16 +110,13 @@ end;
 [data_wn] = create_fenel_format_data (unsorted_results);
 %save data_wn data_wn
 
-
 [reshaped_proc_data,sorted_lookup,data_wn_matrix] =  proc_data_into_modes_safe(data_wn);
 reshaped_proc_data.mesh = mesh ;
+
 %save sorted_lookup sorted_lookup
 %save data_wn_matrix data_wn_matrix
-
 %save reshaped_proc_data reshaped_proc_data
-
 %save reshaped_proc_data reshaped_proc_data -v7.3
-
 %[dispersion_region] = get_dispersion_region(reshaped_proc_data,0.5E5,10000) ;
 
 if do_plot ==1

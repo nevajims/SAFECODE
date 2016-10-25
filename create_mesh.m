@@ -35,25 +35,23 @@
 % nom_el_size = rad/8;
 % triangular_element_type = 2;
 % --------------------------------------------------------------------------
-
 % load('4-01-0A IM RAIL MODEL 56 E 1 (H 158_75 W 139_70).mat')
 % load('5-01-0A IM RAIL MODEL 60 E 1 (H 172 W 150).mat')
 % [equispaced_points_mm, nom_el_size_mm]     =  get_outside_edge( data , 172 , 150 , 100 , 1);
 % [equispaced_points_mm, nom_el_size_mm]     =  get_outside_edge( data , 158.75 , 139.7 , 50 , 1); 
 % nom_el_size = 0.5*nom_el_size_mm * 1E-3;
 % nd_ = [real(equispaced_points_mm )'*1E-3,imag(equispaced_points_mm )'*1E-3];
-%  Data for Circular Cross section
-%  [nodes_,edge_]  =  create_arb_pipe(438.5 , 9.525 , 150);
-%  inner_dia , thickness , no_points
-%  Data for arbitary Cross section
-%  hdata.hmax                     =   nom_el_size;
-%  ops.output                     =   false;
-%  [mesh.nd.pos, mesh.el.nds, mesh.el.fcs] = mesh2d(nd_, [], hdata, ops);
-
-%  need a status bar for calculating perimeter
-%  need a status bar for calculating mesh -  maybe
-%  need some mesh stats once mesh has been calculated
-%  calculate mesh and plot mesh buttons
+% Data for Circular Cross section
+% [nodes_,edge_]  =  create_arb_pipe(438.5 , 9.525 , 150);
+% inner_dia , thickness , no_points
+% Data for arbitary Cross section
+% hdata.hmax                     =   nom_el_size;
+% ops.output                     =   false;
+% [mesh.nd.pos, mesh.el.nds, mesh.el.fcs] = mesh2d(nd_, [], hdata, ops);
+% need a status bar for calculating perimeter
+% need a status bar for calculating mesh - maybe
+% need some mesh stats once mesh has been calculated
+% calculate mesh and plot mesh buttons
 
 function [] =   create_mesh(default_settings_file_number)
 % check whether boundary data can be calculated - if so calculate it
@@ -65,22 +63,23 @@ else
 default_settings_file_name = ['default_settings_file_',num2str(default_settings_file_number),'.mat'];
 end %if (nargin == 0) ; 
 
-mesh_input_settings  =  get_mesh_input_settings(default_settings_file_name);
+mesh_input_settings  =  get_mesh_input_settings(default_settings_file_name) ;
 % at this stage check existance of profiles diectory and the default
 % prfiles file load it and process the data -  if possible    
-%
-% reprocess if any of the input parameters change (in each button )
+% reprocess if any of the input parameters change (in each button)
+boundary_points      = calculate_boundary_points(mesh_input_settings)       ;   
 
-boundary_points      = calculate_boundary_points(mesh_input_settings);   
-%recalculate if shape type is changed or any parameter is changed
+% recalculate if shape type is changed or any parameter is changed
+fig_handle = figure('units','normalized','outerposition',[0.05 0.05 0.5 0.9],'DeleteFcn',@DeleteFcn_callback ,'UserData',struct('mesh_input_settings',mesh_input_settings,'boundary_points',boundary_points,'mesh',NaN));
 
-fig_handle = figure('units','normalized','outerposition',[0.05 0.05 0.5 0.9],'DeleteFcn',@DeleteFcn_callback ,'UserData',struct('mesh_input_settings',mesh_input_settings,'boundary_points',boundary_points));
 % plot_data_structure                         = calculate_boundary_points(plot_data_structure);
 plot_data_structure                           = get(fig_handle,'UserData')           ;
 plot_data_structure.fig_handle                = fig_handle                           ;
-plot_data_structure                           = set_UIcontrols(plot_data_structure)  ;
-plot_data_structure                           = fig_setup(plot_data_structure)       ;                           
-set(fig_handle,'UserData',plot_data_structure)                                                                     ;
+plot_data_structure                           = set_UIcontrols (plot_data_structure) ;
+plot_data_structure                           = fig_setup      (plot_data_structure) ;                           
+
+set(fig_handle,'UserData',plot_data_structure)                                       ;
+
 end %function [] =   create_mesh(initial_settings_data)
 
 
@@ -88,13 +87,19 @@ function DeleteFcn_callback(object_handle,~)
 plot_data_structure = get(object_handle,'UserData');
 end  % function Deletes any animation timer object that may exist at the time of closing the figure
 
-function boundary_points    = calculate_boundary_points(mesh_input_settings)
+function [boundary_points,mesh_input_settings] = calculate_boundary_points(mesh_input_settings)
+
 %two posibilities
 switch(mesh_input_settings.shape_type)
    
      case(1)
    if  ~isnan(mesh_input_settings.inner_dia) && ~isnan(mesh_input_settings.thickness) && ~isnan(mesh_input_settings.no_points)
-[boundary_points.nodes_ , boundary_points.edge_] = create_arb_pipe(mesh_input_settings.inner_dia , mesh_input_settings.thickness , mesh_input_settings.no_points , 0 ) ;       
+[boundary_points.nodes_ , boundary_points.edge_] = create_arb_pipe(mesh_input_settings.inner_dia , mesh_input_settings.thickness , mesh_input_settings.no_points , 0 ) ;  
+
+mesh_input_settings.nom_el_size{1}               = mesh_input_settings.thickness/4        ;
+mesh_input_settings.min_el_size{1}               = mesh_input_settings.nom_el_size{1}/10  ;
+mesh_input_settings.max_el_size{1}               = mesh_input_settings.nom_el_size{1}*10  ;
+
    else
 boundary_points.nodes_ = NaN;
 boundary_points.edge_  = NaN;
@@ -103,7 +108,10 @@ boundary_points.edge_  = NaN;
     case(2)
    if  ~isnan(mesh_input_settings.height) && ~isnan(mesh_input_settings.width) && ~isnan(mesh_input_settings.no_points)&& isstruct(mesh_input_settings.raw_data_)
 % [equispaced_points_mm , path_distance ]  = get_outside_edge_( data , height_ , width_ , no_of_points , 0); -  original
-[boundary_points.nodes_ , boundary_points.edge_] = get_outside_edge_(mesh_input_settings.raw_data_, mesh_input_settings.height , mesh_input_settings.width , mesh_input_settings.no_points , 0);        
+[boundary_points.nodes_ , boundary_points.edge_,nom_el_size] = get_outside_edge_(mesh_input_settings.raw_data_, mesh_input_settings.height , mesh_input_settings.width , mesh_input_settings.no_points , 0);        
+mesh_input_settings.nom_el_size{2}               = floor(nom_el_size*10000)/10000         ; 
+mesh_input_settings.min_el_size{2}               = mesh_input_settings.nom_el_size{2}/10  ;
+mesh_input_settings.max_el_size{2}               = mesh_input_settings.nom_el_size{2}*10  ;
 
    else
 boundary_points.nodes_ = NaN;
@@ -138,20 +146,30 @@ button_handles.plot_button_handle = uicontrol('Style','togglebutton','units','no
 temp_text = ['Element size (mm), (',num2str(plot_data_structure.mesh_input_settings.min_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000) ,', ',num2str(plot_data_structure.mesh_input_settings.max_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000),')'];
 button_handles.mesh_size_text =  uicontrol('Style','text','units','normalized','FontSize',12,'BackgroundColor',[0.8,0.8,0.8], 'Position',[0.01 0.5 0.35 0.03],'String',temp_text,'HorizontalAlignment', 'left',  'visible', plot_data_structure.mesh_input_settings.visible_handles{13});
 button_handles.mesh_size_edit_text_handle = uicontrol('Style','edit','units','normalized','BackgroundColor',[0.85,0.85,0.85], 'Position',[0.35 0.5 0.05 0.03],'String',num2str(plot_data_structure.mesh_input_settings.nom_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000),'HorizontalAlignment', 'right',  'visible', plot_data_structure.mesh_input_settings.visible_handles{14},'Callback',@set_element_size);
-
+button_handles.calc_mesh_text =  uicontrol('Style','text','units','normalized','FontSize',12,'BackgroundColor',[0.8,0.8,0.8], 'Position',[0.25 0.4 0.3 0.03],'String',plot_data_structure.mesh_input_settings.mesh_calc_text,'HorizontalAlignment', 'left',  'visible', plot_data_structure.mesh_input_settings.visible_handles{13});
 button_handles.calc_mesh_button_handle = uicontrol('Style','togglebutton','units','normalized','BackgroundColor',[0.85,0.85,0.85], 'Position',[0.01,0.4 0.18 0.05],'String','Calculate mesh','HorizontalAlignment', 'left',  'visible', 'on','Callback' , @Calculate_mesh);     
-button_handles.plot_mesh_button_handle = uicontrol('Style','togglebutton','units','normalized','BackgroundColor',[0.85,0.85,0.85], 'Position',[0.01,0.1 0.18 0.05],'String','Plot mesh','HorizontalAlignment', 'left',  'visible', 'on','Callback' , @plot_mesh);     
+button_handles.plot_mesh_button_handle = uicontrol('Style','togglebutton','units','normalized','BackgroundColor',[0.85,0.85,0.85], 'Position',[0.01,0.15 0.18 0.05],'String','Plot mesh','HorizontalAlignment', 'left',  'visible', 'on','Callback' , @plot_mesh);     
+
+
+button_handles.save_mesh_button_handle = uicontrol('Style','pushbutton','units','normalized','BackgroundColor',[0.85,0.85,0.85], 'Position',[0.01,0.1 0.18 0.05],'String','Save mesh','HorizontalAlignment', 'left',  'visible', 'on','Callback' , @save_mesh);     
+
+%-----------------------------------------------------------------
+%-----------------------------------------------------------------
+%----------------- save mesh    if mesh exists -------------------
+%-----------------------------------------------------------------
+%-----------------------------------------------------------------
 
 % create a button for plotting the outline-  should be greyd out unless certail criterial are met
 plot_data_structure.button_handles = button_handles;
 end %function plot_data_structure =  set_UIcontrols(plot_data_structure) 
 
+
 function mesh_input_settings =  get_mesh_input_settings(default_settings_file_name)
 
 if   exist(default_settings_file_name) ==2
 load(default_settings_file_name) %  possibly put these in own directory or profiles firectory  
-
 else     
+    
 mesh_input_settings.shape_choices                = {'circular','arbitary'}          ;
 mesh_input_settings.shape_type                   = 1                                ;    % can be either   {'circular','arbitary'}
 mesh_input_settings.visible_handles              = {'on','on','on','on','on','on','off','off','off','off','off','off','on','on'}  ;          % these should be in the data and then refered to after
@@ -162,17 +180,18 @@ mesh_input_settings.external_points_file_name    = 'profile_RAIL_56 E 1 (H 158_7
 mesh_input_settings.height                       = 158.75e-3                                     ;
 mesh_input_settings.width                        = 139.7e-3                                      ; 
 mesh_input_settings.no_points                    = 40                                            ;    % number of equispaced points round the outside
+mesh_input_settings.mesh_calc_text               = 'Mesh not Calculated yet'                     ;
 mesh_input_settings.nom_el_size{1}               = mesh_input_settings.thickness/4               ;
 mesh_input_settings.nom_el_size{2}               = 16.5E-3                                       ; 
-
 mesh_input_settings.min_el_size{1}               = mesh_input_settings.nom_el_size{1}/10  ;
 mesh_input_settings.max_el_size{1}               = mesh_input_settings.nom_el_size{1}*10  ;
 mesh_input_settings.min_el_size{2}               = mesh_input_settings.nom_el_size{2}/10  ;
 mesh_input_settings.max_el_size{2}               = mesh_input_settings.nom_el_size{2}*10  ;
 
 mesh_input_settings.display_boundary_points      = 0                                             ;
-%mesh_input_settings.mesh_size                    =    ; 
-end %if   exist('default_settings_file_name') ==2    
+
+% mesh_input_settings.mesh_size                    =    ; 
+end % if   exist('default_settings_file_name') ==2    
 
 if  ~isempty(dir('profiles\profile*.*'))
 mesh_input_settings.profiles_folder_exists       = 1;
@@ -186,6 +205,7 @@ end %if  ~isempty(dir('profiles\profile*.*'))
 
 end %function mesh_input_settings =  get_mesh_input_settings(value_);
 
+
 function plot_data_structure = fig_setup(plot_data_structure )
 %(fig_handle,button_handles)
 % put in axis labels and figure titles here
@@ -196,6 +216,7 @@ axis equal
 set(plot_data_structure.outside_points_axis,'UserData',1)                ;
 set(plot_data_structure.mesh_axis          ,'UserData',2)                ;    
 end  % set the figure up with axis and plot data if it exists
+
 
 function set_visable_handles(plot_data_structure)
 set(plot_data_structure.button_handles.number_points_text, 'visible', plot_data_structure.mesh_input_settings.visible_handles{1});
@@ -210,34 +231,137 @@ set(plot_data_structure.button_handles.width_text, 'visible', plot_data_structur
 set(plot_data_structure.button_handles.width_edit_text_handle, 'visible', plot_data_structure.mesh_input_settings.visible_handles{10}); 
 set(plot_data_structure.button_handles.profile_file_text, 'visible', plot_data_structure.mesh_input_settings.visible_handles{11});   
 set(plot_data_structure.button_handles.select_profile_file_button_handle, 'visible', plot_data_structure.mesh_input_settings.visible_handles{12}); 
-%set(plot_data_structure.button_handles.mesh_size_text , 'visible', plot_data_structure.mesh_input_settings.visible_handles{13});   
-%set(plot_data_structure.button_handles.mesh_size_edit_text_handle , 'visible', plot_data_structure.mesh_input_settings.visible_handles{14}); 
-
-
-temp_text = ['Element size (mm), (',num2str(plot_data_structure.mesh_input_settings.min_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000) ,', ',num2str(plot_data_structure.mesh_input_settings.max_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000),')'];
+set(plot_data_structure.button_handles.mesh_size_text , 'visible', plot_data_structure.mesh_input_settings.visible_handles{13});   
+set(plot_data_structure.button_handles.mesh_size_edit_text_handle , 'visible', plot_data_structure.mesh_input_settings.visible_handles{14}); 
+temp_text = ['Element v size (mm), (',num2str(plot_data_structure.mesh_input_settings.min_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000) ,', ',num2str(plot_data_structure.mesh_input_settings.max_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000),')'];
 set(plot_data_structure.button_handles.mesh_size_text,'String',temp_text)
+set(plot_data_structure.button_handles.mesh_size_edit_text_handle,'String',num2str(plot_data_structure.mesh_input_settings.nom_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000))
+set(plot_data_structure.button_handles.calc_mesh_text,'String',plot_data_structure.mesh_input_settings.mesh_calc_text)
 
 end %function set_visable_handles(plot_data_structure)
 
 
 function plot_data_structure = recalc_boundary_points_and_plot(plot_data_structure)
-plot_data_structure.boundary_points    = calculate_boundary_points(plot_data_structure.mesh_input_settings);
+
+[plot_data_structure.boundary_points,plot_data_structure.mesh_input_settings]   = calculate_boundary_points(plot_data_structure.mesh_input_settings);
+plot_data_structure.mesh_input_settings.mesh_calc_text                          = 'Mesh not calculated'                                             ;
+plot_data_structure.mesh                                                        = nan                                                               ;
+
+set(plot_data_structure.button_handles.calc_mesh_button_handle,'Value',0)
+set(plot_data_structure.button_handles.plot_mesh_button_handle,'Value',0)
+
+set(plot_data_structure.fig_handle,'CurrentAxes',plot_data_structure.mesh_axis)
+cla
+set_visable_handles(plot_data_structure)
+
 if  get(plot_data_structure.button_handles.plot_button_handle,'Value') ==1
 set(plot_data_structure.fig_handle,'CurrentAxes',plot_data_structure.outside_points_axis)
 cla
 plot(plot_data_structure.boundary_points.nodes_(:,1)*1000,plot_data_structure.boundary_points.nodes_(:,2)*1000,'.')
 axis equal
-end %if  get(plot_data_structure.button_handles.plot_button_handle,'Value') ==1
+end % if get(plot_data_structure.button_handles.plot_button_handle,'Value') == 1
+end % function plot_data_structure = recalc_boundary_points_and_plot(plot_data_structure)
+
+%---------------------------------------------------------------------
+%------------------%%%% CallBack Functions %%%% ----------------------
+%---------------------------------------------------------------------
+
+function save_mesh(hObject, ~)
+plot_data_structure  =  get(get(hObject,'Parent'),'UserData');
+val_ = get(hObject,'Value');
+disp(num2str(val_))
+
+if exist('meshes','dir') ==7
+if isstruct(plot_data_structure.mesh)
+   
+cd('meshes')     
+mesh_file_name       =   create_mesh_file_name(plot_data_structure) ;
+mesh                 =   plot_data_structure.mesh                   ;
+mesh_input_settings  =   plot_data_structure.mesh_input_settings    ;
+save(mesh_file_name, 'mesh', 'mesh_input_settings');
+cd('..')
+
+else
+msgbox('mesh doesnt exist')       
 end
 
+else
+msgbox('cannot save file as there is no mesh directory')   
+end    
 
-%%%% CallBack Functions
+set(get(hObject,'Parent'),'UserData',plot_data_structure);
+end %function save_mesh(hObject, ~)
+
+
+function Calculate_mesh(hObject, ~)
+plot_data_structure  =  get(get(hObject,'Parent'),'UserData');
+val_ = get(hObject,'Value');
+disp(num2str(val_))
+
+switch(val_  )
+    case(1)
+if isstruct(plot_data_structure.boundary_points)
+hdata.hmax                     =    plot_data_structure.mesh_input_settings.nom_el_size{plot_data_structure.mesh_input_settings.shape_type};
+ops.output                     =    false;
+[mesh.nd.pos, mesh.el.nds, mesh.el.fcs] = mesh2d(plot_data_structure.boundary_points.nodes_,[], hdata, ops);    
+plot_data_structure.mesh = mesh;
+plot_data_structure.mesh_input_settings.mesh_calc_text               = 'Mesh Calculated'                                 ;
+else
+plot_data_structure.mesh_input_settings.mesh_calc_text               = 'Mesh not calculated'                             ;
+set(hObject,'Value',0);
+end %if isstruct(plot_data_structure.boundary_points)
+    case(0)
+plot_data_structure.mesh_input_settings.mesh_calc_text               = 'Mesh not calculated'                             ;
+plot_data_structure.mesh        = nan;
+end %switch(val_  )
+set_visable_handles(plot_data_structure)
+set(get(hObject,'Parent'),'UserData',plot_data_structure);
+end %function Calculate_mesh(hObject, ~)
+
+%---------------------------------------------------------------------
+%---------------------------------------------------------------------
+%---------------------------------------------------------------------
+%---------------------------------------------------------------------
+
+function plot_mesh(hObject, ~)
+plot_data_structure  =  get(get(hObject,'Parent'),'UserData');
+val_ = get(hObject,'Value');
+set(plot_data_structure.fig_handle,'CurrentAxes',plot_data_structure.mesh_axis)
+
+switch(val_)
+    
+    case(1)
+    if isstruct(plot_data_structure.mesh)    
+    cla
+    fv.Vertices = plot_data_structure.mesh.nd.pos;
+    fv.Faces =    plot_data_structure.mesh.el.nds;
+    patch(fv, 'FaceColor', 'c');
+    axis equal;
+    axis off;
+    else    
+    cla    
+    set(hObject,'Value',0);        
+    end  %if ~isnan(boundary_points.nodes_)    
+    
+    case(0)
+    cla
+    
+end %switch(val_)
+
+
+set(get(hObject,'Parent'),'UserData',plot_data_structure);
+
+end %function plot_mesh(hObject, ~)
+
+%---------------------------------------------------------------------
+%---------------------------------------------------------------------
+%---------------------------------------------------------------------
+
 
 function set_element_size(hObject, ~)
 plot_data_structure  =  get(get(hObject,'Parent'),'UserData');
 old_value = plot_data_structure.mesh_input_settings.nom_el_size{plot_data_structure.mesh_input_settings.shape_type};
 but_val = str2num(get(hObject,'String'));
-
 % mesh_input_settings.min_el_size{1}
 % mesh_input_settings.max_el_size{1}
 min_val = plot_data_structure.mesh_input_settings.min_el_size{plot_data_structure.mesh_input_settings.shape_type}*1000;
@@ -245,12 +369,13 @@ max_val = plot_data_structure.mesh_input_settings.max_el_size{plot_data_structur
 
 if but_val > min_val  &&  but_val < max_val
 plot_data_structure.mesh_input_settings.nom_el_size{plot_data_structure.mesh_input_settings.shape_type} = but_val /1000;
+plot_data_structure.mesh_input_settings.mesh_calc_text               = 'Mesh not calculated'                             ;
+plot_data_structure.mesh        = nan;
+set(plot_data_structure.button_handles.calc_mesh_button_handle,'Value',0)
+set_visable_handles(plot_data_structure)
 else
 set(plot_data_structure.button_handles.mesh_size_edit_text_handle, 'String',num2str(old_value*1000));
 end %if but_val > min_val && but_val < max_valbut_val
-
-
-
 set(get(hObject,'Parent'),'UserData',plot_data_structure);
 end
 
@@ -443,9 +568,9 @@ end
 function plot_points(hObject, ~)
 plot_data_structure  =  get(get(hObject,'Parent'),'UserData');
 but_val = get(hObject,'Value');
-disp(num2str(but_val));
-set(plot_data_structure.fig_handle,'CurrentAxes',plot_data_structure.outside_points_axis)
+%disp(num2str(but_val));
 
+set(plot_data_structure.fig_handle,'CurrentAxes',plot_data_structure.outside_points_axis)
 if but_val == 1
 if ~isnan(plot_data_structure.boundary_points.nodes_)    
 cla
@@ -458,11 +583,62 @@ end %if ~isnan(boundary_points.nodes_)
 else
 cla
 end %if but_val == 1
+
+
 set(get(hObject,'Parent'),'UserData',plot_data_structure);
 end %function plot_points(hObject, ~)
 
-
 %%%% Functions
+%---------------------------------------------------------------------
+
+function mesh_file_name =   create_mesh_file_name(plot_data_structure)
+
+mesh_file_name = 'MESH_';
+
+switch(plot_data_structure.mesh_input_settings.shape_type)
+
+case(1)
+if plot_data_structure.mesh_input_settings.inner_dia == 0   
+mesh_file_name = [mesh_file_name,'ROD_D',num2str(plot_data_structure.mesh_input_settings.thickness*1000*2),'_mm_'];  %rod
+else
+mesh_file_name = [mesh_file_name,'PIPE_D_',num2str(plot_data_structure.mesh_input_settings.inner_dia*1000),'_T_',num2str(plot_data_structure.mesh_input_settings.thickness*1000),'mm_'] ;   %pipe        
+end %if mesh_input_settings.inner_dia ==0   
+   
+case(2)
+mesh_file_name = [mesh_file_name,get_name_part(plot_data_structure.mesh_input_settings.external_points_file_name),'_' ];
+end %switch(plot_data_structure.mesh_input_settings.shape_type)
+
+dir_deets = dir([mesh_file_name,'*.mat']);
+all_names = {dir_deets.name};
+if isempty(all_names)
+mesh_file_name = [mesh_file_name,'1.mat'];
+else
+start_ind  = length(mesh_file_name)+1;
+for index = 1:length(all_names)
+current_name = all_names{index};
+end_ind = length(current_name)-4;
+numbers_(index)  =  str2num((current_name(start_ind:end_ind)));
+end  %for index = 1:length all_names       
+largest_number = max(numbers_);
+mesh_file_name = [mesh_file_name,num2str(largest_number+1),'.mat'];
+end %if isempty(all_names)
+
+end %function mesh_file_name =   create_mesh_file_name(plot_data_structure)
+
+function name_part_ = get_name_part(external_points_file_name)
+counter = 0; 
+space_found = 0;
+while (space_found == 0)
+    counter = counter + 1; 
+    if strcmp(external_points_file_name,' ') ==1
+       space_found = 1 ;
+       end_point = counter-1
+    end %if strcmp(external_points_file_name,' ') ==1
+end %while space_found == 0    
+name_part_ = external_points_file_name(9:end_point );
+end %function get_name_part(mesh_input_settings.external_points_file_name)
+
+
 function [nodes_,edge_] = create_arb_pipe(inner_dia , thickness , no_points , do_plot)
 if inner_dia ~=0  
 internal_rad = inner_dia/2           ;
@@ -501,7 +677,7 @@ end  % function [nodes_,edge_] = create_arb_pipe(inner_dia , thickness , no_poin
 
 
 %function [equispaced_points_mm , path_distance ]  = get_outside_edge_( data , height_ , width_ , no_of_points , do_plot); 
-function [nodes_ , edge_ ]  = get_outside_edge_( data , height_ , width_ , no_of_points , do_plot)
+function [nodes_ , edge_ , nom_el_size ]  = get_outside_edge_( data , height_ , width_ , no_of_points , do_plot)
 
 horz_mm_p_pix = width_/max(data.x_);
 vert_mm_p_pix = height_/max(data.y_);
@@ -516,8 +692,8 @@ equispaced_path_length_mm                    =  equispaced_path_length  *  horz_
 equispaced_points_mm                         =  equispaced_points_mm -mean(equispaced_points_mm)  ;
 opp_mmm                                      =  (ordered_complex_p- mean(ordered_complex_p)) * horz_mm_p_pix    ;
 
-path_distance =  mean(diff(equispaced_path_length_mm));
-disp (['suggested element_size',num2str(path_distance*1000),'mm'])
+nom_el_size =  mean(diff(equispaced_path_length_mm));
+disp (['suggested element_size',num2str(nom_el_size*1000),'mm'])
 
 if do_plot == 1
 figure
