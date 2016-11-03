@@ -4,13 +4,14 @@ function edge_and_node_props   =   get_edge_and_node_props(mesh,do_plot);
  
 element_nodes    =  mesh.el.nds;
 nodes_           =  mesh.nd.pos;
+
 edge_list = get_edge_list(element_nodes);
 [outside_edge_list , inside_edge_list] = get_inside_and_outside_edges(edge_list,element_nodes);
 [ordered_outside_edge , ordered_outside_nodes] = order_outside_edge(outside_edge_list , nodes_);
 
+edge_and_node_props.edge_list         =  edge_list       ; 
 edge_and_node_props.outside_edge_list = outside_edge_list;
 edge_and_node_props.inside_edge_list = inside_edge_list; 
-
 edge_and_node_props.ordered_outside_edge = ordered_outside_edge; 
 edge_and_node_props.ordered_outside_nodes = ordered_outside_nodes; 
 edge_and_node_props.mesh_coa  = round(mean(nodes_)*1E3)/1E3     ; 
@@ -24,8 +25,10 @@ end %function
 
 function edge_list = get_edge_list(element_nodes)
 edge_list        =  zeros(size(element_nodes,1)*size(element_nodes,2),2); 
+
 for index = 1 : size(element_nodes,1)
 for edge_index = 1:size(element_nodes,2)    
+    
 if  edge_index ~= size(element_nodes,2)    
 temp_edge = [element_nodes(index,edge_index),element_nodes(index,edge_index+1)];
 else

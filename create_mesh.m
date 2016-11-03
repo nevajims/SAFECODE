@@ -109,6 +109,7 @@ boundary_points.edge_  = NaN;
    if  ~isnan(mesh_input_settings.height) && ~isnan(mesh_input_settings.width) && ~isnan(mesh_input_settings.no_points)&& isstruct(mesh_input_settings.raw_data_)
 % [equispaced_points_mm , path_distance ]  = get_outside_edge_( data , height_ , width_ , no_of_points , 0); -  original
 [boundary_points.nodes_ , boundary_points.edge_,nom_el_size] = get_outside_edge_(mesh_input_settings.raw_data_, mesh_input_settings.height , mesh_input_settings.width , mesh_input_settings.no_points , 0);        
+
 mesh_input_settings.nom_el_size{2}               = floor(nom_el_size*10000)/10000         ; 
 mesh_input_settings.min_el_size{2}               = mesh_input_settings.nom_el_size{2}/10  ;
 mesh_input_settings.max_el_size{2}               = mesh_input_settings.nom_el_size{2}*10  ;

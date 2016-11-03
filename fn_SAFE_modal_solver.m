@@ -3,8 +3,8 @@ function unsorted_results = fn_SAFE_modal_solver(mesh, var, indep_var, options)
 default_options.power_normalisation = 1 ;
 default_options.sparse_matrices = 1     ;
 %default_options.sparse_matrices = 0     ; % original values
-default_options.max_sparse_modes = 40   ;
-%default_options.max_sparse_modes = 10   ; % original values
+%default_options.max_sparse_modes = 40   ;
+default_options.max_sparse_modes = 20  ; % original values
 default_options.sigma = 'sm'            ;
 default_options.return_mode_shapes = 1  ;
 
