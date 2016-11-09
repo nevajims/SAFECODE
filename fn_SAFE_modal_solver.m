@@ -1,4 +1,10 @@
 function unsorted_results = fn_SAFE_modal_solver(mesh, var, indep_var, options)
+if  ~isfield(options,'axial_stress')
+options.axial_stress = 0;
+disp('No axial strain set - set to be zero')
+else
+disp([ 'Axial strain (%) = ' , num2str(100*options.axial_stress/mesh.matl{1}.youngs_modulus) , ' %' ])
+end %if  ~isfield(options,'axial_stress')
 
 default_options.power_normalisation = 1 ;
 default_options.sparse_matrices = 1     ;
@@ -10,7 +16,6 @@ default_options.return_mode_shapes = 1  ;
 
 options = fn_set_default_fields(options, default_options);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ops1.SAFE_element = 1;
 ops1.sparse_matrices = options.sparse_matrices;
 ops1.return_C = 1;
@@ -46,8 +51,13 @@ switch indep_var
                 unsorted_results.nd = gl.nd;
                 unsorted_results.dof = gl.dof;
             end;
-            %solve Eigenvalue problem
-            gl.K = gl.K2 * waveno(ii) ^ 2 + gl.K1 * waveno(ii) + gl.K0;
+            
+            % -----------------------------------------------------------------------------------------------------------------
+            % gl.K = gl.K2 * waveno(ii) ^ 2 + gl.K1 * waveno(ii) + gl.K0; %old code
+            % new modified by jimE 2016 using loveday 2009 theory
+            gl.K =  (waveno(ii) ^ 2)* ((options.axial_stress/mesh.matl{1}.density)*gl.M  + gl.K2) + gl.K1 * waveno(ii) + gl.K0;
+            % -----------------------------------------------------------------------------------------------------------------
+            
             if options.sparse_matrices
                 ops.disp = 0;
                 if options.return_mode_shapes

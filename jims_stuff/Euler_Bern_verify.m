@@ -31,11 +31,11 @@
 % -------------------------------------------------------------------------
 function [] =   Euler_Bern_verify (FT_high , FT_low , rod_radius_m)
 % matl_name = 'aluminium' ;
-all_strain_per            = [0 0.04  0.06  0.08  0.1 0.2]               ;  % strain sets to solve for
+all_strain_per            = [0 0.04  0.06  0.08  0.1 ]               ;  % strain sets to solve for
 Thickness                 = rod_radius_m*2;
 
 shear_velocity            = 3100                                        ;  % m/s   
-number_steps              = 100                                         ;  % number of steps in the frequency calculation  
+number_steps              = 10000                                         ;  % number of steps in the frequency calculation  
 FT_step                   = (FT_high-FT_low)/number_steps               ;  %
 
 FT_ALL                    = [FT_low :FT_step: FT_high]                  ;  % FT = Frequency x Thickness
@@ -55,7 +55,10 @@ all_tensions              = all_stress    * CSA                         ;   %
 
 for tension_index = 1 : length(all_tensions)  
 for freq_index   = 1:  length(ALL_Frequencies)
-V_ph_all(tension_index,freq_index)  =    calc_V_ph(ALL_Frequencies(freq_index) , E_ , I_ , all_tensions(tension_index)  , mass_per_unit_length);    
+    
+V_ph_all(tension_index,freq_index)  =    calc_V_ph(2*pi*ALL_Frequencies(freq_index) , E_ , I_ , all_tensions(tension_index)  , mass_per_unit_length);    
+%V_ph_all(tension_index,freq_index)  =    calc_V_ph(ALL_Frequencies(freq_index) , E_ , I_ , all_tensions(tension_index)  , mass_per_unit_length);    
+
 end % for freq_index   = 1:  length(ALL_Frequencies)
 end % for all_tensionsindex = 1 : length(all_tensions)  
 
@@ -64,25 +67,29 @@ end % for all_tensionsindex = 1 : length(all_tensions)
 % y is 
 
 figure (1)
-subplot(2,1,1)
 set(gca, 'XScale', 'log', 'YScale', 'log')
 hold on
 
-subplot(2,1,2)
+figure (2)
 set(gca, 'XScale', 'linear', 'YScale', 'linear')
 hold on
 leg_text            = '';
 
 cc=hsv(length(all_tensions));
 
+
+
 for tension_index   = 1 : length(all_tensions)  
 
 %loglog(FT_ALL, V_ph_all(tension_index,:)/shear_velocity,'color',cc(tension_index,:));
-subplot(2,1,1)
+figure(1)
 plot (FT_ALL, V_ph_all(tension_index,:)/shear_velocity,'color',cc(tension_index,:));   
-
-subplot(2,1,2)
+ylim([0.01 0.4])
+xlim([0.1 100])
+figure(2)
 plot (Freq_all, V_ph_all(tension_index,:),'color',cc(tension_index,:));   
+ylim([0 350])
+xlim([0 1000])
 
 %plot (log(FT_ALL),log(V_ph_all(tension_index,:)/shear_velocity),'color',cc(tension_index,:));   
 
@@ -94,13 +101,13 @@ end %if tension_index   == length(all_tensions)
 leg_text            = [leg_text,'''','Strain = ',num2str(all_strain_per(tension_index)),'''', comma_insert]; 
 end
 
-subplot(2,1,1)
+figure(1)
 eval(['legend(',leg_text,')'])
 % create a legend for all the different strain cases
 xlabel(['Frequency x Thickness '])
 ylabel('phase velocity / shear velocity')
 
-subplot(2,1,2)
+figure(2)
 eval(['legend(',leg_text,')'])
 % create a legend for all the different strain cases
 xlabel(['Frequency (Hz)'])
@@ -109,5 +116,19 @@ ylabel('Phase velocity (m/s)')
 end %function [] =   Euler_Bern_verify(FT_high, FT_low , rod_radius)
 
 function [V_ph] = calc_V_ph(omega_ , E_ , I_ , tension_ , mass_per_unit_length  )
+
 V_ph = omega_*(sqrt((2*E_*I_)/(sqrt(tension_^2 + 4 * mass_per_unit_length*E_*I_*omega_^2)-tension_))) ; 
+
+
 end  % function [V_ph] = calc_V_ph()
+
+
+%--------checking the numbers--------
+%
+%
+%
+%
+%
+%
+%
+%
