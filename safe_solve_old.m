@@ -3,61 +3,44 @@
 %  both for rail and 
 %  Things unsure about
 %  ----------  why does the solver not work for this mode when i put a low frequency value in ??????
-%  ----------  why the descrepency in frequency (20x high in the FE gives  the same results as analytical
+%  ----------  why the descrepency in frequency (20x high in th efE gives  the same results as analytical
+
+
 %  now put in the tension as a variable  and allow the plotting af the same
 %  region for each tesnion selected -  simply by wavenumber at the moment
 
-% The 20 factor in the frequency my be a 2(pi) ^2 
-% Do a three d plot of dispersion curves for various strains in order to identify the modes that are most sensitive to strain-  then look at the mode shapes of these.
-% Look at the excitability of the vertical mode at the top of the rail and the horizontal mode on the side of the rail - look at the effect of tension on this.
-
-% ***  DONE Verify the 'Freq as independent variable' curves by looking at the progating modes and comparing with equivalent WN as independent variable curves.
-% ***  DONE  Plot all the DC in different colours here
-% ***  DONE give the option to do the 3d plot-  different for WN or FREQ options
 clear
-do_plot_mesh = 1;
-do_plot_DC = 1;
-do_plot_Specific_modes = 1;
-show_complex = 1; 
 
+do_plot_mesh = 0 ;
+do_plot_DC = 0 ;
+do_plot_Specific_modes = 1 ;
 % --------------------------------------------------------------------------------
 % Mesh file to load
 % --------------------------------------------------------------------------------
-
 cd('meshes')
-%load('MESH_ROD_D1_mm_1.mat')
-load('MESH_RAIL_56_1.mat')
+load('MESH_ROD_D1_mm_1.mat')
 cd('..')
 element_details = get_element_details(mesh);
-
 % --------------------------------------------------------------------------------
 % Material Properties
 % --------------------------------------------------------------------------------
-%matl_name      = 'aluminium';
-%youngs_modulus = 70e9;     % kg m-1 s-2    
-%poissons_ratio = 1/3;
-%density        = 2700;     % kg/m3
-matl_name      = 'steel';
-youngs_modulus = 216.9e9;
-poissons_ratio = 0.2865;
-density        = 7932;
+matl_name      = 'aluminium';
+youngs_modulus = 70e9;     % kg m-1 s-2    
+poissons_ratio = 1/3;
+density        = 2700;     % kg/m3
 % --------------------------------------------------------------------------------
 % Solver parameters
 % --------------------------------------------------------------------------------
 indep_var               = 'waveno';
-%indep_var               = 'freq';
-pts                     = 150      ;
-max_freq                = 20000  ;
+pts                     = 80      ;
+max_freq                = 500000  ;
 safe_opts.use_sparse    = 1       ;
 triangular_element_type = 2       ;
 % Two options
 %(1):
-
-nom_el_size      =  mesh_input_settings.nom_el_size(mesh_input_settings.shape_type) ;  % size used to set the mesh
-
+nom_el_size      =  mesh_input_settings.nom_el_size(mesh_input_settings.shape_type) ; %  size used to set the mesh
 %(2):
 %nom_el_size     =   element_details.mean_edge_length;
-
 % -------------------------------
 % Loading and boundary conditions
 % -------------------------------
@@ -68,10 +51,7 @@ nom_el_size      =  mesh_input_settings.nom_el_size(mesh_input_settings.shape_ty
 % Tension
 % Put strain in as a percentage
 
-%all_strain_per              =     [0 0.04  0.06  0.08  0.1 ]               ;  % strain sets to solve for
-all_strain_per              =     [0 0.05 0.1];
-
-%all_strain_per              =     [0 ] ;
+all_strain_per              =     [0 0.04  0.06  0.08  0.1 ]               ;  % strain sets to solve for
 all_strain_abs              =     all_strain_per/100                       ;  % no units
 all_stress                  =     all_strain_abs * youngs_modulus          ;
 
@@ -83,7 +63,6 @@ all_stress                  =     all_strain_abs * youngs_modulus          ;
 % --------------------------------
 % Pre prosessing setup parameters
 % --------------------------------
-
 mesh.matl{1}.name              =   matl_name;
 mesh.matl{1}.stiffness_matrix  =   fn_iso_stiffness_matrix(youngs_modulus, poissons_ratio);
 mesh.matl{1}.youngs_modulus    =   youngs_modulus;
@@ -93,19 +72,16 @@ hdata.hmax                     =   nom_el_size;
 mesh.el.matl                   =   ones(size(mesh.el.nds, 1), 1)                           ;
 mesh.el.type                   =   ones(size(mesh.el.nds, 1), 1) * triangular_element_type ;
 mesh.nd.dof                    =   ones(size(mesh.nd.pos, 1), 3)                           ;
-
 % ---------------------------
 % Post prosessing parameters
 % ---------------------------
 % specific
 % ---------------------------
-
-specific_output_mode_number = 1;
-
+specific_output_mode_number = 2;
 %  just output entire mode details for that mode and save in the condition stack
-% ------------------------------------------------------------------------------
+% ------
 % solver
-% ------------------------------------------------------------------------------
+% ------
 % size(all_stress,2)
 % ------
 
@@ -114,7 +90,6 @@ for index = 1 :  size(all_stress,2)
 safe_opts.axial_stress = all_stress(index);
 
 switch indep_var
-    
     case 'waveno'
         var = linspace(0, 2 * pi * max_freq / shear_vel, pts);
         unsorted_results{index} = fn_SAFE_modal_solver(mesh, var, indep_var, safe_opts);
@@ -126,26 +101,7 @@ switch indep_var
 end % switch indep_var
 
 [data_wn{index}] = create_fenel_format_data (unsorted_results{index});
-
-
-
-switch indep_var
-    
-     case 'waveno'
-    [reshaped_proc_data(index).data,sorted_lookup,data_wn_matrix] =  proc_data_into_modes_safe(data_wn{index});        
-     reshaped_proc_data(index).data.mesh = mesh;
-    
-end % switch indep_var
-
-
-
-
-
-
-
-
-
-
+[reshaped_proc_data(index).data,sorted_lookup,data_wn_matrix] =  proc_data_into_modes_safe(data_wn{index});
 
 end %for index = 1:
 
@@ -163,65 +119,26 @@ patch(fv, 'FaceColor', 'c');
 axis equal;
 axis off;
 end
+
 % just plot for the first case
-
-
 if do_plot_DC == 1 
-
 figure 
-hold on
-cc=hsv(size(all_strain_per  ,2));
-
-for index = 1:size(all_strain_per  ,2)
-  
-switch indep_var
-    
-    case 'waveno'
-
-plot(unsorted_results{index}.freq , 2 * pi * unsorted_results{index}.freq ./ unsorted_results{index}.waveno ,'.','color',cc(index,:));
+plot(unsorted_results{1}.freq , 2 * pi * unsorted_results{1}.freq ./ unsorted_results{1}.waveno , 'rx');
 xlabel('Frequency')
 ylabel('Vph')
-       
-    case 'freq'
-        
-if show_complex == 1        
-plot3(unsorted_results{index}.freq , 2 * pi * unsorted_results{index}.freq ./real(unsorted_results{index}.waveno), 2 * pi * unsorted_results{index}.freq ./imag(unsorted_results{index}.waveno)   ,'.','color',cc(index,:));
-xlabel('Frequency')
-ylabel('Real Vph')
-zlabel('Imaginary Vph')
-
-
-else
-plot(unsorted_results{index}.freq , 2 * pi * unsorted_results{index}.freq ./ unsorted_results{index}.waveno ,'.','color',cc(index,:));
-xlabel('Frequency')
-ylabel('Vph')
-end %if show_complex == 1        
-        
-end % switch indep_var
-
-end %for index = 1:size(all_strain_per  ,2)
-
-%axis([0, 1000, 0,350 ]);
+axis([0, 1000, 0,350 ]);
 %axis([0, max_freq, 0, 2*long_vel]);
-%axis([0, 20000, 0,500 ]);
-
-
+%axis([0, 50E3, 0, 10E3]);
 end %if do_plot_DC == 1 
 
 
 if do_plot_Specific_modes == 1 
-    
-switch indep_var
-    
-     case 'waveno'
-
 figure
 hold on
 leg_text = '';
 cc=hsv(size(all_strain_per  ,2));
 
 for index = 1:size(all_strain_per  ,2)
-    
 plot(reshaped_proc_data(index).data.freq(:,specific_output_mode_number),reshaped_proc_data(index).data.ph_vel(:,specific_output_mode_number),'-x','color',cc(index,:))    
 
 if index == size(all_strain_per  ,2)
@@ -233,17 +150,5 @@ leg_text            = [leg_text,'''','Strain = ',num2str(all_strain_per(index)),
 end
 disp(['legend(',leg_text,')'])
 eval(['legend(',leg_text,')'])
-%axis([0, 20000, 0,500 ]);    
-axis([0, 2000, 0,1200 ]);
-     case 'freq'         
-         
-disp('cant plot like this yet')
-     
-    
-end % switch indep_var    
-
+axis([0, 1000, 0,500 ]);    
 end %if do_plot_Specific_modes == 1 
-
-
-
-

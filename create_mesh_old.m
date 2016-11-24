@@ -274,16 +274,12 @@ disp(num2str(val_))
 
 if exist('meshes','dir') ==7
 if isstruct(plot_data_structure.mesh)
-
-
+   
 cd('meshes')     
-
-mesh_file_name       =   create_mesh_file_name(plot_data_structure);
-
-mesh                 =   plot_data_structure.mesh                  ;
-mesh_input_settings  =   plot_data_structure.mesh_input_settings   ;
+mesh_file_name       =   create_mesh_file_name(plot_data_structure) ;
+mesh                 =   plot_data_structure.mesh                   ;
+mesh_input_settings  =   plot_data_structure.mesh_input_settings    ;
 save(mesh_file_name, 'mesh', 'mesh_input_settings');
-
 cd('..')
 
 else
@@ -635,9 +631,9 @@ counter = 0;
 space_found = 0;
 while (space_found == 0)
     counter = counter + 1; 
-    if strcmp(external_points_file_name(counter),' ') ==1
+    if strcmp(external_points_file_name,' ') ==1
        space_found = 1 ;
-       end_point = counter-1;
+       end_point = counter-1
     end %if strcmp(external_points_file_name,' ') ==1
 end %while space_found == 0    
 name_part_ = external_points_file_name(9:end_point );
