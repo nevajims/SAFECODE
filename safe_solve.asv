@@ -50,14 +50,14 @@ element_details = get_element_details(mesh);
 % --------------------------------------------------------------------------------
 % Material Properties
 % --------------------------------------------------------------------------------
-%matl_name      = 'aluminium';
-%youngs_modulus = 70e9;     % kg m-1 s-2    
-%poissons_ratio = 1/3;
-%density        = 2700;     % kg/m3
-matl_name      = 'steel';
-youngs_modulus = 216.9e9;
-poissons_ratio = 0.2865;
-density        = 7932;
+matl_name      = 'aluminium';
+youngs_modulus = 70e9;     % kg m-1 s-2    
+poissons_ratio = 1/3;
+density        = 2700;     % kg/m3
+%matl_name      = 'steel';
+%youngs_modulus = 216.9e9;
+%poissons_ratio = 0.2865;
+%density        = 7932;
 % --------------------------------------------------------------------------------
 % Solver parameters
 % --------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ nom_el_size      =  mesh_input_settings.nom_el_size(mesh_input_settings.shape_ty
 %all_strain_per              =     [0 0.05 0.1];   
 
 %all_strain_per              =     [0 0.25 0.5 0.75 1];   
-all_strain_per              =     [0 0.0125 0.025 0.05 0.075 0.1 0.2];   
+all_strain_per              =     [0 0.025 0.05 0.075 0.1];   
 
 %all_strain_per              =     [0 ] ;
 all_strain_abs              =     all_strain_per/100                       ;  % no units
@@ -158,14 +158,25 @@ switch indep_var
      case 'waveno'
     [reshaped_proc_data(index).data,sorted_lookup,data_wn_matrix] =  proc_data_into_modes_safe(data_wn{index});        
     reshaped_proc_data(index).data.mesh = mesh;
-    if index ==  1
-    reshaped_proc_data(index).data.all_strain_per = all_strain_per;
-    end
+    if
+    
      
     
 end % switch indep_var
 
 end %for index = 1:
+
+
+switch indep_var
+     case 'waveno'
+    reshaped_proc_data.all_strain_per = all_strain_per;
+   
+end % switch indep_var
+
+
+
+
+
 
 
 %reshaped_proc_data.mesh                = mesh               ;

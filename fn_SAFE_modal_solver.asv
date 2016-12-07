@@ -111,6 +111,7 @@ switch indep_var
             M = gl.M + i * 2 * pi * freq(ii) * gl.C;
             %solve Eigenvalue problem
             if options.sparse_matrices
+                         
                 % -----------------------------------------------------------------------------------------------------------------
                 % K_left = [gl.K2, sparse(sz,sz); sparse(sz,sz), (2 * pi * freq(ii)) ^ 2 * M - gl.K0];
                 % K_right = [sparse(sz,sz), gl.K2; gl.K2, gl.K1]; 

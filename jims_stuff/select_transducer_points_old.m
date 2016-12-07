@@ -1,17 +1,19 @@
 function    select_transducer_points(reshaped_proc_data)
+
+%select_transducer_points(reshaped_proc_data(1).data)
+
 if (nargin == 0) ; disp('This function requires ''reshaped_proc_data'' as an input -- terminating early'); run_prog = 0; else  run_prog = 1; end
 
 
+mesh_properties = get_ordered_external_nodes(reshaped_proc_data.mesh);
+
 if run_prog ==1
-fig_handle = figure('units','normalized','outerposition',[0.05 0.05 0.9 0.9],'DeleteFcn',@DeleteFcn_callback ,'UserData',struct('reshaped_proc_data',reshaped_proc_data,'mesh_properties',mesh_properties,'Chosen_points',-1,...
- ));
-
-
+fig_handle = figure('units','normalized','outerposition',[0.05 0.05 0.9 0.9],'DeleteFcn',@DeleteFcn_callback ,'UserData',struct('reshaped_proc_data',reshaped_proc_data,'mesh_properties',mesh_properties,'Chosen_points',-1));
 end %if run_prog ==1    
 
 
 
-mesh_properties = get_ordered_external_nodes(reshaped_proc_data.mesh);
+
 
 hold on
 axis equal
