@@ -61,10 +61,10 @@ density        = 7932;
 % --------------------------------------------------------------------------------
 % Solver parameters
 % --------------------------------------------------------------------------------
-indep_var               = 'waveno';
-%indep_var               = 'freq';
+%indep_var               = 'waveno';
+indep_var               = 'freq';
 %pts                     = 150      ;
-max_freq                = 20000  ;    % rail
+max_freq                = 1000  ;    % rail
 pts                     = 120      ;
 
 %max_freq                = 50000  ;   %freq
@@ -93,7 +93,7 @@ nom_el_size      =  mesh_input_settings.nom_el_size(mesh_input_settings.shape_ty
 %all_strain_per              =     [0 0.05 0.1];   
 
 %all_strain_per              =     [0 0.25 0.5 0.75 1];   
-all_strain_per              =     [0 0.0125 0.025 0.05 0.075 0.1 0.2];   
+all_strain_per              =     [0 0.1];   
 
 %all_strain_per              =     [0 ] ;
 all_strain_abs              =     all_strain_per/100                       ;  % no units
@@ -204,10 +204,14 @@ ylabel('Vph')
     case 'freq'
     disp(num2str(index))    
 if show_complex == 1        
-plot3(unsorted_results{index}.freq , 2 * pi * unsorted_results{index}.freq ./real(unsorted_results{index}.waveno), 2 * pi * unsorted_results{index}.freq ./imag(unsorted_results{index}.waveno)   ,'.','color',cc(index,:));
+plot3(unsorted_results{index}.freq , real(unsorted_results{index}.waveno), imag(unsorted_results{index}.waveno)   ,'.','color',cc(index,:));
 xlabel('Frequency')
-ylabel('Real Vph')
-zlabel('Imaginary Vph')
+ylabel('Real Wavenumber')
+zlabel('Imaginary Wavenumber')
+
+zlim([-10,10])
+ylim([-20 20])
+xlim([0,1000])
 
 else
     disp(num2str(index))
@@ -219,7 +223,7 @@ end %if show_complex == 1
 end % switch indep_var
 
 end %for index = 1:size(all_strain_per  ,2)
-axis([0, 2E4, 0,1E4 ])
+%axis([0, 2E4, 0,1E4 ])
 %axis([0, 1000, 0,350 ]);
 %axis([0, max_freq, 0, 2*long_vel]);
 %axis([0, 20000, 0,500]);
