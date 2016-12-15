@@ -19,12 +19,12 @@ reshaped_proc_data.group_velocity = calc_group_vel(reshaped_proc_data.freq,resha
 % set up figure as parent object and put all relevant data in this-  all
 % other objects will be children of this and can therfore access the data
 % structure held in 'UserData'  AKA   plot_data_structure
-default_limit_options = {[0  1.2E4],[0 25],[0 8000],[0 5000]};
+default_limit_options = {[0  300],[0 5],[0 1000],[0 2000]};
 
 
 fig_handle = figure('units','normalized','outerposition',[0.05 0.05 0.9 0.9],'DeleteFcn',@DeleteFcn_callback ,'UserData',struct('undeformed_node_positions',-1,...
 'mult_factor',1,'max_mult_factor',2,'mesh_view1',[180 -90],'mesh_view2',[0 90],'mesh_view3',[90 0],'point_index',3,'show_displacement',0, ...
-'mode_index',5,'reshaped_proc_data',reshaped_proc_data,'lim_options',{default_limit_options},'def_lim_options',{default_limit_options} ,'label_options',...
+'mode_index',1,'reshaped_proc_data',reshaped_proc_data,'lim_options',{default_limit_options},'def_lim_options',{default_limit_options} ,'label_options',...
 {{'Freq(Hz)','WaveNo.(1/m)','Phase Velocity(m/s)','Group Velocity(m/s)'}},'x_index',1,'y_index',3,'cartesian_or_cylindrical',1,'mode_shape_display_option',...
 1,'animate_button_value',0,'animation_timer_handle',-1,'current_animation_angle',0,'mult_factor_speed',30,'modes_to_plot',1:size(reshaped_proc_data.freq,2),'show_mesh',0));
 
@@ -1136,8 +1136,9 @@ end %function plot_data_structure = plot_deformation_vector(plot_data_structure)
 
 function plot_data_structure       = calculate_max_mult_factor(plot_data_structure)
 undeformed_node_positions  = plot_data_structure.undeformed_node_positions;
-ms_x                       = plot_data_structure.reshaped_proc_data.ms_x(:,plot_data_structure.point_index,plot_data_structure.mode_index);
-ms_y                       = plot_data_structure.reshaped_proc_data.ms_y(:,plot_data_structure.point_index,plot_data_structure.mode_index);
+disp(num2str(plot_data_structure.mode_index))
+ms_x                       =  plot_data_structure.reshaped_proc_data.ms_x(:,plot_data_structure.point_index,plot_data_structure.mode_index);
+ms_y                       =  plot_data_structure.reshaped_proc_data.ms_y(:,plot_data_structure.point_index,plot_data_structure.mode_index);
 width_of_mesh              =  max(undeformed_node_positions(:,1)) -min(undeformed_node_positions(:,1));
 height_of_mesh             =  max(undeformed_node_positions(:,2)) -min(undeformed_node_positions(:,2));
 mesh_dim                   =  max([width_of_mesh,height_of_mesh])             ;

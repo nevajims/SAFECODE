@@ -17,9 +17,6 @@
 %   Do a three d plot of dispersion curves for various strains in order to identify the modes that are most sensitive to strain-  then look at the mode shapes of these.
 
 
-
-
-
 %   Look at the excitability of the vertical mode at the top of the rail and the horizontal mode on the side of the rail - look at the effect of tension on this.
 %   do a comparison of the propogating and non propogating waves
 
@@ -32,7 +29,7 @@
 
 
 clear
-do_plot_mesh = 1;
+do_plot_mesh = 0;
 do_plot_DC = 1;
 do_plot_Specific_modes = 1;
 show_complex = 1; 
@@ -64,8 +61,8 @@ density        = 7932;
 %indep_var               = 'waveno';
 indep_var               = 'freq';
 %pts                     = 150      ;
-max_freq                = 1000  ;    % rail
-pts                     = 120      ;
+ max_freq                = 300  ;    % rail
+ pts                     = 250      ;
 
 %max_freq                = 50000  ;   %freq
 %max_freq                = 500000  ; %WN
@@ -93,11 +90,11 @@ nom_el_size      =  mesh_input_settings.nom_el_size(mesh_input_settings.shape_ty
 %all_strain_per              =     [0 0.05 0.1];   
 
 %all_strain_per              =     [0 0.25 0.5 0.75 1];   
-all_strain_per              =     [0 0.1];   
+ all_strain_per              =     [0 0.05 0.1];   
 
 %all_strain_per              =     [0 ] ;
-all_strain_abs              =     all_strain_per/100                       ;  % no units
-all_stress                  =     all_strain_abs * youngs_modulus          ;
+ all_strain_abs              =     all_strain_per/100                       ;  % no units
+ all_stress                  =     all_strain_abs * youngs_modulus          ;
 
 % then calculate the stress  = strain * youngs modulus
 % Tension =   stress * CSA?
@@ -132,7 +129,6 @@ specific_output_mode_number = 1;
 % ------------------------------------------------------------------------------
 % size(all_stress,2)
 % ------
-
 for index = 1 :  size(all_stress,2)
     
 safe_opts.axial_stress = all_stress(index);
@@ -146,6 +142,7 @@ switch indep_var
     case 'freq'
         var = linspace(0, max_freq, pts);
         unsorted_results{index} = fn_SAFE_modal_solver(mesh, var, indep_var, safe_opts);
+
         
 end % switch indep_var
 
@@ -158,12 +155,19 @@ switch indep_var
      case 'waveno'
     [reshaped_proc_data(index).data,sorted_lookup,data_wn_matrix] =  proc_data_into_modes_safe(data_wn{index});        
     reshaped_proc_data(index).data.mesh = mesh;
+    
     if index ==  1
     reshaped_proc_data(index).data.all_strain_per = all_strain_per;
     end
      
     
 end % switch indep_var
+
+if index ==  1
+    unsorted_results{index}.all_strain_per = all_strain_per;
+end %if index ==  1
+    
+
 
 end %for index = 1:
 
@@ -211,7 +215,7 @@ zlabel('Imaginary Wavenumber')
 
 zlim([-10,10])
 ylim([-20 20])
-xlim([0,1000])
+xlim([0,400])
 
 else
     disp(num2str(index))

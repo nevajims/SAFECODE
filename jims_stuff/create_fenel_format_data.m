@@ -69,7 +69,6 @@ else
 data_wn.freq   = freq                              ;
 data_wn.waveno = waveno                            ;
 data_wn.ph_vel = 2*pi*data_wn.freq./data_wn.waveno ;
-
 data_wn.ms_x = ms_x;
 data_wn.ms_y = ms_y;
 data_wn.ms_z = ms_z;
