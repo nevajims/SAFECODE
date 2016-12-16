@@ -20,7 +20,7 @@ unsorted_results_short{1}.all_strain_per = unsorted_results{1}.all_strain_per;
 
 for index = 1:size(all_strain_per  ,2)
    
-pos_ind  = find(imag(unsorted_results{index}.waveno)>0.003 & imag(unsorted_results{index}.waveno)<6 ) ;    
+pos_ind  = find(imag(unsorted_results{index}.waveno)>0.006 & imag(unsorted_results{index}.waveno)<6 ) ;    
 disp(length (pos_ind))
 unsorted_results_short{index}.freq                 =   unsorted_results{index}.freq(pos_ind);
 unsorted_results_short{index}.waveno               =   unsorted_results{index}.waveno(pos_ind);
@@ -58,7 +58,7 @@ for index = 1:length(unique_freqs)
     
 temp_inds = find(unsorted_results_short{index_strain}.freq==unique_freqs(index));
 [BB,II] = sort(imag(unsorted_results_short{index_strain}.waveno(temp_inds)));
-sorted_temp_inds  =temp_inds(II);
+sorted_temp_inds  =flip(temp_inds(II));
 
 for mode_index = 1:length(sorted_temp_inds)
     
@@ -155,7 +155,8 @@ grid on
 
 %put data into format for modes
 for index = 1:size(all_strain_per  ,2)
-reshaped_proc_data_np(index).data = sorted_results{index_strain};
+reshaped_proc_data_np(index).data = sorted_results{index};
 end %for index = 1:size(all_strain_per  ,2)
 reshaped_proc_data_np(1).data.all_strain_per = all_strain_per ;
+reshaped_proc_data_np(1).data.stat   =   1;
 
