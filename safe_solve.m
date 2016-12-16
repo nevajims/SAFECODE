@@ -61,9 +61,10 @@ density        = 7932;
 %indep_var               = 'waveno';
 indep_var               = 'freq';
 %pts                     = 150      ;
- max_freq                = 300  ;    % rail
- pts                     = 250      ;
-
+max_freq                = 300  ;    % rail
+pts                     = 250      ;
+%max_freq                = 10000;
+%max_freq                = 1500;
 %max_freq                = 50000  ;   %freq
 %max_freq                = 500000  ; %WN
 
@@ -90,7 +91,7 @@ nom_el_size      =  mesh_input_settings.nom_el_size(mesh_input_settings.shape_ty
 %all_strain_per              =     [0 0.05 0.1];   
 
 %all_strain_per              =     [0 0.25 0.5 0.75 1];   
- all_strain_per              =     [0 0.05 0.1];   
+ all_strain_per              =     [0 0.1];   
 
 %all_strain_per              =     [0 ] ;
  all_strain_abs              =     all_strain_per/100                       ;  % no units

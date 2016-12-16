@@ -12,7 +12,7 @@ selected_mode  =  1;
 %selected_node  =  258;  % side of head
 
 
-freq_points    =  110;
+freq_points    =  249;
 
 
 selected_node  =  138 ; % middle of web
@@ -46,13 +46,16 @@ for index = 1:length (all_strain_per)
 subplot(sub_plot_1)
 semilogy(reshaped_proc_data(1).data.freq(1:freq_points,selected_mode), abs(reshaped_proc_data(index).data.ms_x(selected_node,1:freq_points,selected_mode)),'color',cc(index,:)) 
 hold on
+xlim([0 200])
 %plot(reshaped_proc_data(1).data.freq(1:freq_points,selected_mode) , reshaped_proc_data(index).data.ms_x(selected_node,1:freq_points,selected_mode),'-x','color',cc(index,:)) 
 subplot(sub_plot_2)
 semilogy(reshaped_proc_data(1).data.freq(1:freq_points,selected_mode), abs(reshaped_proc_data(index).data.ms_y(selected_node,1:freq_points,selected_mode)),'color',cc(index,:)) 
 hold on
+xlim([0 200])
 subplot(sub_plot_3)
 semilogy(reshaped_proc_data(1).data.freq(1:freq_points,selected_mode), abs(reshaped_proc_data(index).data.ms_z(selected_node,1:freq_points,selected_mode)),'color',cc(index,:)) 
 hold on
+xlim([0 200])
 
 
 
@@ -63,16 +66,19 @@ plot(reshaped_proc_data(1).data.freq(1:freq_points,selected_mode), 100*(abs(resh
 ylim([0 100])
 grid on
 hold on
+xlim([0 200])
 subplot(sub_plot_5)
 plot(reshaped_proc_data(1).data.freq(1:freq_points,selected_mode), 100*(abs(reshaped_proc_data(1).data.ms_y(selected_node,1:freq_points,selected_mode))-abs(reshaped_proc_data(index).data.ms_y(selected_node,1:freq_points,selected_mode)))./abs(reshaped_proc_data(index).data.ms_y(selected_node,1:freq_points,selected_mode)),'color',cc(index,:)) 
 ylim([0 100])
 grid on
 hold on
+xlim([0 200])
 subplot(sub_plot_6)
 plot(reshaped_proc_data(1).data.freq(1:freq_points,selected_mode), 100*(abs(reshaped_proc_data(1).data.ms_z(selected_node,1:freq_points,selected_mode))-abs(reshaped_proc_data(index).data.ms_z(selected_node,1:freq_points,selected_mode)))./abs(reshaped_proc_data(index).data.ms_z(selected_node,1:freq_points,selected_mode)),'color',cc(index,:)) 
 ylim([0 100])
 grid on
 hold on
+xlim([0 200])
 
     else
 subplot(sub_plot_1)
