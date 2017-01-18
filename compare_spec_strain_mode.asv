@@ -1,8 +1,8 @@
 function [] = compare_spec_strain_mode(reshaped_proc_data, reshaped_proc_data_np)
 % Plot all the sensitivity values for  
 
-%Sensitivity_to_plot = [1 1 1 1 1 1 1 1 1 1];
-Sensitivity_to_plot = [0 0 0 0 0 0 0 0 0 0];
+Sensitivity_to_plot = [1 1 1 1 1 1 1 1 1 1];
+
 all_params = {'Real WN Propagating','Imag WN Propagating','Real WN Non-Prop','Imag WN Non-Prop','PND X Propagating','PND Y Propagating','PND Z Propagating','PND X Non-Prop','PND Y Non-Prop','PND Z Non-Prop'};
 no_to_plot = sum(Sensitivity_to_plot);
 %xlim_max = 200;
@@ -256,7 +256,7 @@ if Sensitivity_to_plot(8)==1
 line_number = line_number+1;
 nz_val = abs(squeeze(interpol_vals_np.ms_x_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals_np.ms_x_vals (mode_index,1,:))); 
-plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
+plot(interpol_vals.freq_vals_np(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
 
 if line_number == no_to_plot
 comma_insert = '';
@@ -272,7 +272,7 @@ if Sensitivity_to_plot(9)==1
 line_number = line_number+1;
 nz_val = abs(squeeze(interpol_vals_np.ms_y_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals_np.ms_y_vals (mode_index,1,:))); 
-plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
+plot(interpol_vals.freq_vals_np(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
 if line_number == no_to_plot
 comma_insert = '';
 else
@@ -288,7 +288,7 @@ if Sensitivity_to_plot(10)==1
 line_number = line_number+1;    
 nz_val = abs(squeeze(interpol_vals_np.ms_z_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals_np.ms_z_vals (mode_index,1,:))); 
-plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))  
+plot(interpol_vals.freq_vals_np(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))  
 if line_number == no_to_plot
 comma_insert = '';
 else
@@ -340,6 +340,10 @@ end % for mode_index = 1:2
 %------------------
 % sensitivity for all 6 parameters above
 %------------------
+
+
+
+
 %------------------
 % Propagating
 %------------------
