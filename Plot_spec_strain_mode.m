@@ -61,7 +61,6 @@ for sub_index = 1:3
 
 sub_(4 + fig_count,sub_index)  = subplot(3,1,sub_index);
 
-
 if type_index==1
 semilogy(0,0)
 end
@@ -78,11 +77,12 @@ end %for mode_index = 1:length(modes_to_plot)
 
 freq_min =zeros(1,length(modes_to_plot));
 for index_mode = 1:length(modes_to_plot)
+    
 freq_min(index_mode) = max(reshaped_proc_data(1).data.freq(:,modes_to_plot(index_mode))) ;
 for index_strain = 2:length(all_strain_per)
-       
+
 if freq_min(index_mode) > max(reshaped_proc_data(index_strain).data.freq(:,modes_to_plot(index_mode)))
-C = max(reshaped_proc_data(index_strain).data.freq(:,modes_to_plot(index_mode)));
+freq_min(index_mode) = max(reshaped_proc_data(index_strain).data.freq(:,modes_to_plot(index_mode)));
 end %if freq_min(index_mode)> max(reshaped_proc_data(index_strain).data.freq(:,modes_to_plot(index_mode)))          
 
 end %for index_1 = 1:length(all_strain_per)  
@@ -94,13 +94,12 @@ freq_vals(mode_index,:) = [0:freq_min(mode_index)/(number_freq_points-1):freq_mi
     
 for strain_index  = 1:length(all_strain_per)
 % here  is the interpolation part
-
 ph_vel_vals(mode_index,strain_index,:) = interp1(reshaped_proc_data(strain_index).data.freq(:,modes_to_plot(mode_index) ),reshaped_proc_data(strain_index).data.ph_vel(:,modes_to_plot(mode_index) ),freq_vals(mode_index,:));                                
 WN_vals    (mode_index,strain_index,:) = interp1(reshaped_proc_data(strain_index).data.freq(:,modes_to_plot(mode_index) ),reshaped_proc_data(strain_index).data.waveno(:,modes_to_plot(mode_index) ),freq_vals(mode_index,:));
-
 ms_x_vals  (mode_index,strain_index,:) = interp1(reshaped_proc_data(strain_index).data.freq(:,modes_to_plot(mode_index) ),abs(reshaped_proc_data(strain_index).data.ms_x(selected_node,:,modes_to_plot(mode_index) )),freq_vals(mode_index,:));
 ms_y_vals (mode_index,strain_index,:)  = interp1(reshaped_proc_data(strain_index).data.freq(:,modes_to_plot(mode_index) ),abs(reshaped_proc_data(strain_index).data.ms_y(selected_node,:,modes_to_plot(mode_index) )),freq_vals(mode_index,:));
 ms_z_vals (mode_index,strain_index,:)  = interp1(reshaped_proc_data(strain_index).data.freq(:,modes_to_plot(mode_index) ),abs(reshaped_proc_data(strain_index).data.ms_z(selected_node,:,modes_to_plot(mode_index) )),freq_vals(mode_index,:));
+
 end %for strain_index  = 1:length(all_strain_per) 
 end %for mode_idex = 1:length(modes_to_plot)
 
@@ -113,6 +112,7 @@ figure(fig_(1))
 for mode_index = 1:length(modes_to_plot)
 subplot(sub_(1,mode_index))
 plot(freq_vals(mode_index,:),squeeze(ph_vel_vals(mode_index,strain_index,:  )),'-x','color',cc(strain_index,:))    
+
 
 end % for mode_index = 1:length(modes_to_plot)
 
@@ -199,6 +199,9 @@ end
 
 for fig_index = 1:4
 figure(fig_(fig_index))    
+
+%leg_text = '';
+
 eval(['legend(',leg_text,')'])   
  
 for mode_index = 1:length(modes_to_plot)  

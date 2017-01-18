@@ -62,14 +62,13 @@ sorted_temp_inds  =flip(temp_inds(II));
 
 for mode_index = 1:length(sorted_temp_inds)
     
-sorted_results{index_strain}.freq(index,mode_index)   = unsorted_results_short{index_strain}.freq(sorted_temp_inds(mode_index)); 
-%sorted_results{index_strain}.waveno(index,mode_index) = imag(unsorted_results_short{index_strain}.waveno(sorted_temp_inds(mode_index)));     
-sorted_results{index_strain}.waveno(index,mode_index) = unsorted_results_short{index_strain}.waveno(sorted_temp_inds(mode_index));     
+sorted_results{index_strain}.freq(index,mode_index)   = unsorted_results_short{index_strain}.freq(sorted_temp_inds(mode_index)) ; 
+sorted_results{index_strain}.waveno(index,mode_index) = imag(unsorted_results_short{index_strain}.waveno(sorted_temp_inds(mode_index))) ;     
 sorted_results{index_strain}.ph_vel(index,mode_index) = 2*pi*(sorted_results{index_strain}.freq(index,mode_index))./sorted_results{index_strain}.waveno(index,mode_index);
 
-sorted_results{index_strain}.ms_x(:,index,mode_index) = unsorted_results_short{index_strain}.ms_x(:,sorted_temp_inds(mode_index));     
-sorted_results{index_strain}.ms_y(:,index,mode_index) = unsorted_results_short{index_strain}.ms_y(:,sorted_temp_inds(mode_index));     
-sorted_results{index_strain}.ms_z(:,index,mode_index) = unsorted_results_short{index_strain}.ms_z(:,sorted_temp_inds(mode_index));     
+sorted_results{index_strain}.ms_x(:,index,mode_index) = unsorted_results_short{index_strain}.ms_x(:,sorted_temp_inds(mode_index)) ;     
+sorted_results{index_strain}.ms_y(:,index,mode_index) = unsorted_results_short{index_strain}.ms_y(:,sorted_temp_inds(mode_index)) ;     
+sorted_results{index_strain}.ms_z(:,index,mode_index) = unsorted_results_short{index_strain}.ms_z(:,sorted_temp_inds(mode_index)) ;     
 
 sorted_results{index_strain}.mesh = mesh;
 
@@ -92,7 +91,7 @@ title('Mode 1')
 for index = 1:size(all_strain_per  ,2)
 %plot(sorted_results{index}.freq(:,mode_index),   imag(sorted_results{index}.waveno(:,mode_index)),'colr',cc(index,:))    
 %plot(sorted_results{index}.freq(:,mode_index),  100* (imag(sorted_results{index}.waveno(:,mode_index))-imag(sorted_results{1}.waveno(:,mode_index))      ) ./imag(sorted_results{1}.waveno(:,mode_index)),'color',cc(index,:))    
-plot(sorted_results{index}.freq(:,mode_index),   100*(sorted_results{index}.waveno(:,mode_index) - sorted_results{1}.waveno(:,mode_index)      ) ./sorted_results{1}.waveno(:,mode_index),'color',cc(index,:))    
+plot(sorted_results{index}.freq(:,mode_index),  100* (sorted_results{index}.waveno(:,mode_index)-sorted_results{1}.waveno(:,mode_index)      ) ./sorted_results{1}.waveno(:,mode_index),'color',cc(index,:))    
 end %for index = 1:length(unique_freqs)
 ylim([0 100])
 xlim([0 200])
@@ -125,9 +124,7 @@ title('Mode 2')
 for index = 1:size(all_strain_per  ,2)
 %plot(sorted_results{index}.freq(:,mode_index),   imag(sorted_results{index}.waveno(:,mode_index)),'color',cc(index,:))    
 %plot(sorted_results{index}.freq(:,mode_index),   100*(imag(sorted_results{index}.waveno(:,mode_index))-imag(sorted_results{1}.waveno(:,mode_index)))./imag(sorted_results{1}.waveno(:,mode_index)),'color',cc(index,:))    
-plot(sorted_results{index}.freq(:,mode_index),   100*(sorted_results{index}.waveno(:,mode_index)-sorted_results{1}.waveno(:,mode_index))./sorted_results{1}.waveno(:,mode_index),'color',cc(index,:))   
-
-
+plot(sorted_results{index}.freq(:,mode_index),   100*(sorted_results{index}.waveno(:,mode_index)-sorted_results{1}.waveno(:,mode_index))./sorted_results{1}.waveno(:,mode_index),'color',cc(index,:))    
 end %for index = 1:length(unique_freqs)
 ylim([0 100])
 xlim([0 200])
@@ -135,11 +132,6 @@ eval(['legend(',leg_text,')'])
 xlabel('Frequency')
 ylabel('sensitivity (%)')
 grid on
-
-
-
-
-
 
 figure(fig_B)
 

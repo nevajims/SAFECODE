@@ -2,33 +2,26 @@
 %  find a mesh and conditions that solve reasonably quickly - 
 %  both for rail and 
 %  Things unsure about
-% ***  DONE ----------  why does the solver not work for this mode when i put a low frequency value in ??????
+%  ----------  why does the solver not work for this mode when i put a low frequency value in ??????
 %  ----------  why the descrepency in frequency (20x high in the FE gives  the same results as analytical
-% ***  DONE now put in the tension as a variable  and allow the plotting af the same
-% ***  DONE region for each tesnion selected -  simply by wavenumber at the moment
+%  now put in the tension as a variable  and allow the plotting af the same
+%  region for each tesnion selected -  simply by wavenumber at the moment
 
-% ***  DONEThe 20 factor in the frequency my be a 2(pi) ^2 
-% ***  DONEFind the 
-% ***  DONE  Do a three d plot of dispersion curves for various strains in order to identify the modes that are most sensitive to strain-  then look at the mode shapes of these.
-% ***  DONE  Look at the excitability of the vertical mode at the top of the rail and the horizontal mode on the side of the rail - look at the effect of tension on this.
-% ***  DONE  do a comparison of the propogating and non propogating waves
+% The 20 factor in the frequency my be a 2(pi) ^2 
+% Find the 
+
+
+%   Do a three d plot of dispersion curves for various strains in order to identify the modes that are most sensitive to strain-  then look at the mode shapes of these.
+
+
+%   Look at the excitability of the vertical mode at the top of the rail and the horizontal mode on the side of the rail - look at the effect of tension on this.
+%   do a comparison of the propogating and non propogating waves
+
+
+
 % ***  DONE Verify the 'Freq as independent variable' curves by looking at the progating modes and comparing with equivalent WN as independent variable curves.
 % ***  DONE  Plot all the DC in different colours here
 % ***  DONE give the option to do the 3d plot-  different for WN or FREQ options
-% get the sort startionary to keep the real and imaginary parts of the wave
-% number and phase velocity
-
-%Some comments in no particular order:
-
-%- it would be worth plotting the sensitivities for the various different metrics on the same graph (maybe one graph for each mode).
-%- I think that the sensitivity for any point on the mode shape and in any direction will be very similar - they would be different if the effect of load actually altered the mode shape - but if it just changes the amplitude then the sensitivities will be identical
-%- for modest sensitivities (i.e. 100kHz and up), the wavenumber and phase velocity sensitivity, s, will be almost the same (but opposite sign) since v=w/k: write k as k(1+s) and then v~w(1-s+...)/k.
-%- for the non-propagating modes, I'd look at the sensitivity of the real and imaginary parts of the wavenumber separately since these are the fundamental modal properties with physical meanings - if you look at imaginary part of phase velocity it is a function of both real and imaginary parts of wavenumber so you get sensitivity of both scrambled up in result.
-% - Overall, it looks like 10% sensitivity of most quantities for mode 1 (lateral bending) at 100kHz and about half the sensitivity for mode 2 at same frequency.
-
-% BASED ON THESE POINTS-  LOOK ONLY AT THE WAVENUMBER
-% we want -  sensitivity-  wave number (real and imaginary)   PND   for mode 1 and 2 and   for   P and NP   
-
 
 clear
 do_plot_mesh = 0;
@@ -62,12 +55,12 @@ density        = 7932;
 % --------------------------------------------------------------------------------
 % Solver parameters
 % --------------------------------------------------------------------------------
-indep_var               = 'waveno';
-%indep_var               = 'freq';
+%indep_var               = 'waveno';
+indep_var               = 'freq';
 %pts                     = 150      ;
-%max_freq                = 300  ;    % rail freq
+max_freq                = 300  ;    % rail freq
 pts                     = 250      ;
-max_freq                = 1500;  % rail wn
+%max_freq                = 1500;  % rail wn
 
 safe_opts.use_sparse    = 1       ;
 triangular_element_type = 2       ;
@@ -202,6 +195,7 @@ for index = 1:size(all_strain_per  ,2)
 switch indep_var
     
     case 'waveno'
+
 plot(unsorted_results{index}.freq , 2 * pi * unsorted_results{index}.freq ./ unsorted_results{index}.waveno ,'.','color',cc(index,:));
 xlabel('Frequency')
 ylabel('Vph')

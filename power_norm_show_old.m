@@ -6,9 +6,7 @@ function [] =   power_norm_show(reshaped_proc_data)
 % Node on the side of the head  258  and   32   look at x and y movement here for lateral mode (1)
 % Nodes in the middle of the web 185 and 106   look at x and y movement here for lateral mode (1) 
 % Look at the data to work out 
-% Plot the x y and z  aganst strain
-
-
+% Plot the x y and z  against strain
 abs_or_not = 1 ;
 selected_mode  =  1;
 %selected_node  =  258;  % side of head
