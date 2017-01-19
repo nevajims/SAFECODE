@@ -2,10 +2,19 @@ function [] = compare_spec_strain_mode(reshaped_proc_data, reshaped_proc_data_np
 % Plot all the sensitivity values for  
 
 %Sensitivity_to_plot = [1 1 1 1 1 1 1 1 1 1];
-Sensitivity_to_plot = [0 0 0 0 0 0 0 0 0 0];
+%Sensitivity_to_plot = [1 0 0 1 1 1 1 1 1 1];
+%Sensitivity_to_plot = [1 0 0 1 0 0 0 0 0 0 ];
+%Sensitivity_to_plot = [0 0 0 0 1 1 1 0 0 0];
+Sensitivity_to_plot = [0 0 0 0 0 0 0 1 1 1];
+
+%Sensitivity_to_plot = [1 0 0 1 0 0 0 0 0 0];
+
+%Sensitivity_to_plot = [0 0 0 0 0 0 0 0 0 0];
 all_params = {'Real WN Propagating','Imag WN Propagating','Real WN Non-Prop','Imag WN Non-Prop','PND X Propagating','PND Y Propagating','PND Z Propagating','PND X Non-Prop','PND Y Non-Prop','PND Z Non-Prop'};
 no_to_plot = sum(Sensitivity_to_plot);
 %xlim_max = 200;
+plot_wavenumber = 0;
+
 modes_to_plot = [1 2];   % make this an input to the function
 number_freq_points = 3000;
 %selected_node  =  185 ; % middle of web
@@ -37,101 +46,125 @@ cc = hsv(length(reshaped_proc_data));
 cc2 = hsv(no_to_plot);
 % 'color',cc(strain_index,:))    
 
-
+if plot_wavenumber == 1 
 for mode_index = 1:2
 
-fig_A{mode_index} = figure;  
+fig_A(mode_index) = figure;  
 % set the figure title
 title(['Mode ', num2str(mode_index)])
 hold on
 
 
-sub_A1{mode_index} = subplot(4,1,1); 
-sub_A2{mode_index} = subplot(4,1,2);
-sub_A3{mode_index} = subplot(4,1,3);
-sub_A4{mode_index} = subplot(4,1,4);
+sub_A1(mode_index) = subplot(4,1,1); 
+hold on
+title('Real WN Propagating')
+
+sub_A2(mode_index) = subplot(4,1,2);
+hold on
+title('Imag WN Propagating')
+
+sub_A3(mode_index) = subplot(4,1,3);
+hold on
+title('Real WN Non-Prop')
+
+sub_A4(mode_index) = subplot(4,1,4);
+hold on
+title('Imag WN Non-Prop')
 
 
-fig_B{mode_index} = figure;
+fig_B(mode_index) = figure;
 title(['Mode ', num2str(mode_index)])
 hold on
 
-sub_B1{mode_index} = subplot(2,3,1); 
+sub_B1(mode_index) = subplot(2,3,1); 
 semilogy(0,0)
 hold on 
 title('Direction X')
 xlabel('Freq')
 
-sub_B2{mode_index} = subplot(2,3,2); 
+sub_B2(mode_index) = subplot(2,3,2); 
 semilogy(0,0)
 hold on 
 title('Direction Y')
 xlabel('Freq')
 
-sub_B3{mode_index} = subplot(2,3,3); 
+sub_B3(mode_index) = subplot(2,3,3); 
 semilogy(0,0)
 hold on 
 title('Direction Z')
 xlabel('Freq')
 
-sub_B4{mode_index} = subplot(2,3,4); 
+sub_B4(mode_index) = subplot(2,3,4); 
 semilogy(0,0)
 hold on 
 title('Direction X')
 xlabel('Freq')
 
-sub_B5{mode_index} = subplot(2,3,5); 
+sub_B5(mode_index) = subplot(2,3,5); 
 semilogy(0,0)
 hold on 
 title('Direction Y')
 xlabel('Freq')
 
-sub_B6{mode_index} = subplot(2,3,6); 
+sub_B6(mode_index) = subplot(2,3,6); 
 semilogy(0,0)
 hold on 
 title('Direction Z')
 xlabel('Freq')
 
+end %for mode_index = 1:2
+
+end %if plot_wavenumber == 1
+
+
+for mode_index = 1:2
+
+if plot_wavenumber == 1    
 for strain_index = 1 : length(reshaped_proc_data)
-fig_A{mode_index}
-sub_A1{mode_index}
+figure(fig_A(mode_index))
+subplot(sub_A1(mode_index))
 % subfig 1 wavenumber real  (prop)
 plot(interpol_vals.freq_vals(mode_index,:), real(squeeze(interpol_vals.WN_vals(mode_index,strain_index,:  ))),'-x','color',cc(strain_index,:))    
-sub_A2{mode_index}
+subplot(sub_A2(mode_index))
 plot(interpol_vals.freq_vals(mode_index,:), imag(squeeze(interpol_vals.WN_vals(mode_index,strain_index,:  ))),'-x','color',cc(strain_index,:))    
 % subfig 2 wavenumber imag  (prop)
-sub_A3{mode_index}
+subplot(sub_A3(mode_index))
 plot(interpol_vals_np.freq_vals(mode_index,:), real(squeeze(interpol_vals_np.WN_vals(mode_index,strain_index,:  ))),'-x','color',cc(strain_index,:))    
 % subfig 3 wavenumber real and imaginary (non prop)
-sub_A4{mode_index}
+subplot(sub_A4(mode_index))
 plot(interpol_vals_np.freq_vals(mode_index,:), imag(squeeze(interpol_vals_np.WN_vals(mode_index,strain_index,:  ))),'-x','color',cc(strain_index,:))    
 
 % subfig 4 wavenumber imag  (non prop)    
 
-fig_B{mode_index} = figure;
+figure(fig_B(mode_index));
 
-sub_B1{mode_index} = subplot(2,3,1); 
+subplot(sub_B1(mode_index)); 
 semilogy(interpol_vals.freq_vals(mode_index,:), abs(squeeze(interpol_vals.ms_x_vals (mode_index,strain_index,:))) ,'-x','color',cc(strain_index,:))    
 
-sub_B2{mode_index} = subplot(2,3,2); 
+subplot(sub_B2(mode_index)); 
 semilogy(interpol_vals.freq_vals(mode_index,:), abs(squeeze(interpol_vals.ms_y_vals (mode_index,strain_index,:))) ,'-x','color',cc(strain_index,:))    
 
-sub_B3{mode_index} = subplot(2,3,3); 
+subplot(sub_B3(mode_index)); 
 semilogy(interpol_vals.freq_vals(mode_index,:), abs(squeeze(interpol_vals.ms_z_vals (mode_index,strain_index,:))) ,'-x','color',cc(strain_index,:))    
 
-sub_B4{mode_index} = subplot(2,3,4); 
+subplot(sub_B4(mode_index)) ; 
 semilogy(interpol_vals_np.freq_vals(mode_index,:), abs(squeeze(interpol_vals_np.ms_x_vals (mode_index,strain_index,:))) ,'-x','color',cc(strain_index,:))    
 
-sub_B5{mode_index} = subplot(2,3,5); 
+subplot(sub_B5(mode_index)); 
 semilogy(interpol_vals_np.freq_vals(mode_index,:), abs(squeeze(interpol_vals_np.ms_y_vals (mode_index,strain_index,:))) ,'-x','color',cc(strain_index,:))    
 
-sub_B6{mode_index} = subplot(2,3,6); 
+subplot(sub_B6(mode_index)); 
 semilogy(interpol_vals_np.freq_vals(mode_index,:), abs(squeeze(interpol_vals_np.ms_z_vals (mode_index,strain_index,:))) ,'-x','color',cc(strain_index,:))    
 end  % for strain_index = 1 : length(reshaped_proc_data)
 
+end %if plot_wavenumber == 1
+
 % sensitivity plot for the second strain condition oveer the zero strain condition
-fig_C{1} = figure ; 
+fig_C{mode_index} = figure ; 
 hold on
+title(['Mode ',num2str(mode_index)])
+xlabel('Freq (Hz)')
+ylabel('Sensitivity (%)')
 line_number = 0;
 %build up the legend for an eval statement
 %leg_text = '';
@@ -150,7 +183,7 @@ if Sensitivity_to_plot(1)==1
 line_number = line_number+1;
 nz_val = real(squeeze(interpol_vals.WN_vals(mode_index,2,:)));
 zer_val = real(squeeze(interpol_vals.WN_vals(mode_index,1,:)));
-plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))
+plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:))
 
 if line_number == no_to_plot
 comma_insert = '';
@@ -164,7 +197,7 @@ if Sensitivity_to_plot(2)==1
 line_number = line_number+1;
 nz_val = imag(squeeze(interpol_vals.WN_vals(mode_index,2,:)));
 zer_val = imag(squeeze(interpol_vals.WN_vals(mode_index,1,:)));
-plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val),'-x','color',cc2(line_number,:))    
+plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val),'-x','color',cc2(line_number,:))    
 
 if line_number == no_to_plot
 comma_insert = '';
@@ -180,7 +213,7 @@ if Sensitivity_to_plot(3)==1
 line_number = line_number+1;
 nz_val = real(squeeze(interpol_vals_np.WN_vals(mode_index,2,:)));
 zer_val = real(squeeze(interpol_vals_np.WN_vals(mode_index,1,:)));
-plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
+plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:))    
 if line_number == no_to_plot
 comma_insert = '';
 else
@@ -195,7 +228,7 @@ if Sensitivity_to_plot(4)==1
 line_number = line_number+1;
 nz_val = imag(squeeze(interpol_vals_np.WN_vals(mode_index,2,:)));
 zer_val = imag(squeeze(interpol_vals_np.WN_vals(mode_index,1,:)));
-plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
+plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:))    
 if line_number == no_to_plot
 comma_insert = '';
 else
@@ -209,7 +242,7 @@ if Sensitivity_to_plot(5)==1
 line_number = line_number+1;
 nz_val = abs(squeeze(interpol_vals.ms_x_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals.ms_x_vals (mode_index,1,:))); 
-plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:)) 
+plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:)) 
 
 if line_number == no_to_plot
 comma_insert = '';
@@ -225,7 +258,7 @@ if Sensitivity_to_plot(6)==1
 line_number = line_number+1;
 nz_val = abs(squeeze(interpol_vals.ms_y_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals.ms_y_vals (mode_index,1,:))); 
-plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
+plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:))    
 
 if line_number == no_to_plot
 comma_insert = '';
@@ -240,7 +273,7 @@ if Sensitivity_to_plot(7)==1
 line_number = line_number+1;
 nz_val = abs(squeeze(interpol_vals.ms_z_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals.ms_z_vals (mode_index,1,:))); 
-plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
+plot(interpol_vals.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:))    
 
 if line_number == no_to_plot
 comma_insert = '';
@@ -256,7 +289,7 @@ if Sensitivity_to_plot(8)==1
 line_number = line_number+1;
 nz_val = abs(squeeze(interpol_vals_np.ms_x_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals_np.ms_x_vals (mode_index,1,:))); 
-plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
+plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:))    
 
 if line_number == no_to_plot
 comma_insert = '';
@@ -272,7 +305,7 @@ if Sensitivity_to_plot(9)==1
 line_number = line_number+1;
 nz_val = abs(squeeze(interpol_vals_np.ms_y_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals_np.ms_y_vals (mode_index,1,:))); 
-plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))    
+plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:))    
 if line_number == no_to_plot
 comma_insert = '';
 else
@@ -288,7 +321,7 @@ if Sensitivity_to_plot(10)==1
 line_number = line_number+1;    
 nz_val = abs(squeeze(interpol_vals_np.ms_z_vals (mode_index,2,:)));
 zer_val = abs(squeeze(interpol_vals_np.ms_z_vals (mode_index,1,:))); 
-plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)/zer_val) ,'-x','color',cc2(line_number,:))  
+plot(interpol_vals_np.freq_vals(mode_index,:),abs(100*(nz_val-zer_val)./zer_val) ,'-x','color',cc2(line_number,:))  
 if line_number == no_to_plot
 comma_insert = '';
 else
@@ -296,17 +329,20 @@ comma_insert = ',';
 end
 leg_text            = [leg_text,'''',all_params{10},'''', comma_insert]; 
 end
-
-
-
+disp(num2str(line_number))
+xlim([0 150])
+ylim([0 40])
+disp(['legend(',leg_text,')'])
+eval(['legend(',leg_text,')'])
+end
 %-------------------------------------------------------------------------------------------------------------------------
 
-disp(['legend(',leg_text,')'])
+
 %eval(['legend(',leg_text,')'])   
 % Build up the % plot the  parameters of interest here
 % set the figure title
 % choose the parameters  to plot here
-end % for mode_index = 1:2
+
 
 
 % do one plot for each Mode with the following parameters in each   
